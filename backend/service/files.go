@@ -1,7 +1,7 @@
 package service
 
 import (
-	filesmanager "PhotoWithTagServer/FilesManager"
+	filesmanager "FilesWithTag/FilesManager"
 	"fmt"
 	"net/http"
 )
