@@ -1,7 +1,7 @@
 package service
 
 import (
-	"io/ioutil"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -9,20 +9,18 @@ import (
 
 func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	url := r.URL.String()
+	fmt.Println(url)
 
 	url = strings.Replace(url, "/view/", "", 1)
 
-	file, err := os.Open("../frontend/" + url)
-	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
+	_, err := os.Stat("../frontend/" + url)
+
+	check := !os.IsNotExist(err)
+
+	if check {
+		http.ServeFile(w, r, "../frontend/"+url)
+	} else {
+		w.Write([]byte("Пошел нахуй"))
 	}
 
-	body, err := ioutil.ReadAll(file)
-	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
-	}
-
-	w.Write(body)
 }
