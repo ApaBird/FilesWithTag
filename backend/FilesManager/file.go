@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/rwcarlsen/goexif/exif"
 	"github.com/rwcarlsen/goexif/tiff"
@@ -55,36 +56,34 @@ func FilesInDir(dir string) ([]FileInfo, error) {
 	return list, nil
 }
 
-func AnalyzeStorage() (ans map[string]*interface{}) {
-
-	ans = make(map[string]*interface{})
-	m := make(map[string]*interface{})
-	ans["C:/"] = &m
+func AnalyzeStorage() (ans map[string]interface{}) {
+	t := time.Now()
+	ans = make(map[string]interface{})
+	ans["C:/"] = make(map[string]interface{})
 	pull := make([]string, 0)
 	pull = append(pull, "C:/")
 
 	for len(pull) > 0 {
 		dir := pull[0]
-		pull := pull[1:]
+		pull = pull[1:]
+		if strings.Contains(dir, "Windows") || strings.Contains(dir, "Program Files") {
+			continue
+		}
 		files, err := os.ReadDir(dir)
 		if err != nil {
+			fmt.Println(err.Error())
 			continue
 		}
 
 		for _, file := range files {
 			if file.IsDir() {
-				split := strings.Split(dir, "/")[1:]
-				var target interface{}
-				target = ans["C:/"]
-				for _, v := range split {
-					target = target.(map[string]*interface{})[v]
-				}
-				*target.(map[string]*interface{})[file.Name()] = make(map[string]*interface{})
 				pull = append(pull, dir+"/"+file.Name())
+				//fmt.Println(dir + "/" + file.Name())
 				continue
 			}
 		}
 	}
 
+	fmt.Println("Времения потрачено:", time.Since(t))
 	return ans
 }
