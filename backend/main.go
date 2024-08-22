@@ -1,7 +1,9 @@
 package main
 
 import (
+	filesmanager "FilesWithTag/FilesManager"
 	"FilesWithTag/service"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -10,6 +12,13 @@ import (
 
 func main() {
 	config := Readconfig("config.json")
+
+	a := filesmanager.AnalyzeStorage()
+	b, err := json.Marshal(a)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println(string(b))
 
 	r := mux.NewRouter()
 

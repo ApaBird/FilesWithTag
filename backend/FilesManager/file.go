@@ -3,6 +3,7 @@ package filesmanager
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/rwcarlsen/goexif/exif"
 	"github.com/rwcarlsen/goexif/tiff"
@@ -52,4 +53,38 @@ func FilesInDir(dir string) ([]FileInfo, error) {
 		list = append(list, c.List)
 	}
 	return list, nil
+}
+
+func AnalyzeStorage() (ans map[string]*interface{}) {
+
+	ans = make(map[string]*interface{})
+	m := make(map[string]*interface{})
+	ans["C:/"] = &m
+	pull := make([]string, 0)
+	pull = append(pull, "C:/")
+
+	for len(pull) > 0 {
+		dir := pull[0]
+		pull := pull[1:]
+		files, err := os.ReadDir(dir)
+		if err != nil {
+			continue
+		}
+
+		for _, file := range files {
+			if file.IsDir() {
+				split := strings.Split(dir, "/")[1:]
+				var target interface{}
+				target = ans["C:/"]
+				for _, v := range split {
+					target = target.(map[string]*interface{})[v]
+				}
+				*target.(map[string]*interface{})[file.Name()] = make(map[string]*interface{})
+				pull = append(pull, dir+"/"+file.Name())
+				continue
+			}
+		}
+	}
+
+	return ans
 }
