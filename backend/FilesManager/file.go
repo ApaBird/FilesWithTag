@@ -14,6 +14,8 @@ type convector struct {
 	List FileInfo
 }
 
+var OsTree = Dir{}
+
 func (c convector) Walk(name exif.FieldName, tag *tiff.Tag) error {
 	fmt.Println("Ok")
 	c.List.Meta[name] = tag
@@ -56,17 +58,17 @@ func FilesInDir(dir string) ([]FileInfo, error) {
 	return list, nil
 }
 
-func AnalyzeStorage() (ans map[string]interface{}) {
+func AnalyzeStorage() {
 	t := time.Now()
-	ans = make(map[string]interface{})
-	ans["C:/"] = make(map[string]interface{})
 	pull := make([]string, 0)
 	pull = append(pull, "C:/")
+
+	OsTree = NewDir("C:", "C:/")
 
 	for len(pull) > 0 {
 		dir := pull[0]
 		pull = pull[1:]
-		if strings.Contains(dir, "Windows") || strings.Contains(dir, "Program Files") {
+		if strings.Contains(dir, "Windows") || strings.Contains(dir, "Program Files") || strings.Contains(dir, "ProgramData") {
 			continue
 		}
 		files, err := os.ReadDir(dir)
@@ -78,12 +80,18 @@ func AnalyzeStorage() (ans map[string]interface{}) {
 		for _, file := range files {
 			if file.IsDir() {
 				pull = append(pull, dir+"/"+file.Name())
-				//fmt.Println(dir + "/" + file.Name())
-				continue
+				d := OsTree.FindDir(dir)
+				// fmt.Println("=>", strings.Count(dir, "/"))
+				// if strings.Count(dir, "/") >= 3 {
+				// 	time.Sleep(time.Second * 10)
+				// }
+				if d == nil {
+					continue
+				}
+				d.AddDirByName(file.Name())
 			}
 		}
 	}
 
 	fmt.Println("Времения потрачено:", time.Since(t))
-	return ans
 }
