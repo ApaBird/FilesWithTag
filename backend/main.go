@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -15,10 +16,15 @@ func main() {
 	filesmanager.AnalyzeStorage()
 
 	r := mux.NewRouter()
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"}, // All origins
+		AllowedHeaders: []string{"*"},
+		AllowedMethods: []string{"POST", "GET", "PUT", "DELETE"}, // Allowing only get, just an example
+	})
 
 	r.HandleFunc("/Files", service.Wrapper(service.FilesHandler)).Methods("GET")
 	r.HandleFunc("/OsTree", service.Wrapper(service.OsTreeHandler)).Methods("GET")
 	r.PathPrefix("/view").HandlerFunc(service.ViewHandler)
 	fmt.Println("Сервер запущен")
-	http.ListenAndServe(":"+config.Port, r)
+	http.ListenAndServe(":"+config.Port, c.Handler(r))
 }
