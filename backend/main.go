@@ -1,7 +1,8 @@
 package main
 
 import (
-	filesmanager "FilesWithTag/FilesManager"
+	//filesmanager "FilesWithTag/FilesManager"
+	pythonmoduleapi "FilesWithTag/PythonModuleAPI"
 	"FilesWithTag/service"
 	"fmt"
 	"net/http"
@@ -13,7 +14,7 @@ import (
 func main() {
 	config := Readconfig("config.json")
 
-	filesmanager.AnalyzeStorage()
+	//filesmanager.AnalyzeStorage()
 
 	r := mux.NewRouter()
 	c := cors.New(cors.Options{
@@ -21,6 +22,8 @@ func main() {
 		AllowedHeaders: []string{"*"},
 		AllowedMethods: []string{"POST", "GET", "PUT", "DELETE"}, // Allowing only get, just an example
 	})
+
+	pythonmoduleapi.Start()
 
 	r.HandleFunc("/Files", service.Wrapper(service.FilesHandler)).Methods("GET")
 	r.HandleFunc("/OsTree", service.Wrapper(service.OsTreeHandler)).Methods("GET")
