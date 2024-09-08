@@ -1,30 +1,23 @@
 import argparse
 import socket
-
-parser = argparse.ArgumentParser(description='A tutorial of argparse!')
-parser.add_argument("--port")
-parser.add_argument("--ip")
+import server as customServer
+import metaReader as handlerMeta
 
 
-args = parser.parse_args()
+def main():
+    parser = argparse.ArgumentParser(description='A tutorial of argparse!')
+    parser.add_argument("--port")
+    parser.add_argument("--ip")
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((args.ip, int(args.port)))
-server.listen(1)
+    args = parser.parse_args()
 
-print("Сервер запущен и ожидает подключений...")
+    handlers = {
+        "GetMeta": handlerMeta
+    }    
 
-client_socket, client_address = server.accept()
-print(f"Подключение установлено с {client_address}")
+    server = customServer.Server(args.ip, int(args.port), handlers)
+    server.StartServer()
+            
 
-order = ""
-
-while True:
-    char = client_socket.recv(1)
-    if char == b'\n':
-        print("Анализируем файл")
-        print(order)
-        order = ""
-    else:
-        order += char
-        
+if __name__ == "__main__":
+    main()

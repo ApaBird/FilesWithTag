@@ -8,7 +8,9 @@ import (
 )
 
 type Configstruct struct {
-	Port string `json:"port"`
+	ModulePort string `json:"modulePort"`
+	ModuleIp   string `json:"moduleIp"`
+	Port       string `json:"port"`
 }
 
 func Readconfig(path string) (config Configstruct) {

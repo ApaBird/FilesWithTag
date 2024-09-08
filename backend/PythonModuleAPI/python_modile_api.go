@@ -3,33 +3,44 @@ package pythonmoduleapi
 import (
 	"fmt"
 	"net"
-	"os"
-	"os/exec"
-	"strings"
-	"time"
 )
 
-func Start() {
-	//MetaDataModule\\venv\\Scripts\\python.exe MetaDataModule\\main.py --port=5000 --ip=127.0.0.1
-	path, err := os.Executable()
-	if err != nil {
-		fmt.Println(err.Error())
+type MetaDataModule struct {
+	Port string
+	Ip   string
+	conn net.Conn
+}
+
+func NewModule(ip, port string) MetaDataModule {
+	module := MetaDataModule{
+		Port: port,
+		Ip:   ip,
 	}
-
-	path = strings.Replace(path, "FilesWithTag.exe", "", -1)
-
-	cmd := exec.Command(path+`MetaDataModule\venv\Scripts\python.exe `, path+`MetaDataModule\main.py`, `--port=5000`, `--ip=127.0.0.1`)
-	output, err := cmd.Output()
-	if err != nil {
-		fmt.Println("[ERROR]", err.Error())
-	}
-	println("=>", string(output))
-	time.Sleep(time.Second * 5)
-
-	metaDataPython, err := net.Dial("tcp", "127.0.0.1:5000")
+	var err error
+	module.conn, err = net.Dial("tcp", ip+":"+port)
 	if err != nil {
 		panic(err)
 	}
 
-	metaDataPython.Write([]byte("hello\n"))
+	return module
+}
+
+func (module MetaDataModule) SendData(data string) {
+	module.conn.Write([]byte(data + "\n"))
+}
+
+func (module MetaDataModule) Scan() string {
+	ans := ""
+	for {
+		buf := make([]byte, 1)
+		_, err := module.conn.Read(buf)
+		if err != nil {
+			fmt.Println("[ERROR]", err.Error())
+			return ""
+		}
+		if string(buf[0]) == "\n" {
+			return ans
+		}
+		ans += string(buf[0])
+	}
 }

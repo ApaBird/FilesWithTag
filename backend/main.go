@@ -2,6 +2,7 @@ package main
 
 import (
 	//filesmanager "FilesWithTag/FilesManager"
+
 	pythonmoduleapi "FilesWithTag/PythonModuleAPI"
 	"FilesWithTag/service"
 	"fmt"
@@ -23,7 +24,9 @@ func main() {
 		AllowedMethods: []string{"POST", "GET", "PUT", "DELETE"}, // Allowing only get, just an example
 	})
 
-	pythonmoduleapi.Start()
+	metaDataModule := pythonmoduleapi.NewModule(config.ModuleIp, config.ModulePort)
+	metaDataModule.SendData("GetMeta c:\\Users\\apabi\\Desktop\\ \\Нейронка\\stable-diffusion-webui\\outputs\\works\\sfw\\00005-3381904655.png")
+	fmt.Println("=>", metaDataModule.Scan())
 
 	r.HandleFunc("/Files", service.Wrapper(service.FilesHandler)).Methods("GET")
 	r.HandleFunc("/OsTree", service.Wrapper(service.OsTreeHandler)).Methods("GET")
