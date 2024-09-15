@@ -1,23 +1,10 @@
-import argparse
-import socket
-import server as customServer
-import metaReader as handlerMeta
+import fastapi
+import metaReader
 
+app = fastapi.FastAPI()
 
-def main():
-    parser = argparse.ArgumentParser(description='A tutorial of argparse!')
-    parser.add_argument("--port")
-    parser.add_argument("--ip")
+@app.get("/GetMeta")
+def getMeta(Path: str):
+    json = metaReader.ReadMeta(Path)
 
-    args = parser.parse_args()
-
-    handlers = {
-        "GetMeta": handlerMeta
-    }    
-
-    server = customServer.Server(args.ip, int(args.port), handlers)
-    server.StartServer()
-            
-
-if __name__ == "__main__":
-    main()
+    return fastapi.responses.JSONResponse(content=json)

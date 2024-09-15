@@ -17,6 +17,9 @@ var ErrParametrs = errors.New("Отсутсвуют обязательные п�
 func Wrapper(f func(w http.ResponseWriter, r *http.Request) any) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		resp := f(w, r)
+		if resp == nil {
+			return
+		}
 		val := reflect.ValueOf(resp)
 
 		if val.Type().Kind() == reflect.Struct && val.IsValid() {

@@ -1,12 +1,8 @@
+import hachoir.metadata
 from hachoir.parser import createParser
 from hachoir.metadata import extractMetadata
-
-def handlerMeta(order):
-    if order.find("GetMeta") != -1:
-        print(order)
-        return ReadMeta(order.replace("GetMeta", ""))
-    else:
-        return None
+import hachoir
+import os
 
 def ReadMeta(path):
     parser = createParser(path)
