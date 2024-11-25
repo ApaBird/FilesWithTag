@@ -11,6 +11,10 @@ import (
 	"github.com/rs/cors"
 )
 
+// TODO: Добавление мета тегов
+// TODO: Собирать мета теги и хранить
+// TODO: ендпоинт для выдачи существующих мета тегов
+
 func main() {
 	config := Readconfig("config.json")
 
