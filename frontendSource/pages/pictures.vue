@@ -17,4 +17,11 @@ const bytes = 'iVBORw0KGgoAAAANSUhEUgAAAoEAAAKBCAYAAAAoU3G4AAAAAXNSR0IArs4c6QAAI
 function getPath(number) {
   return  new URL(`C:\\Users\\kuram\\Downloads\\FilesWithTag-main\\FilesWithTag-main\\frontend\\testImg\\${number}.png`,import.meta.glob).href
 }
+
+getFolders();
+
+async function getFolders() {
+  await $fetch("http://127.0.0.1:8050/OsTree")
+}
+
 </script> 

@@ -32,6 +32,7 @@
 
 const tags = ref(['Старик', 'Поел говна', 'Пенсия'])
 const newTag = ref('')
+const pathAddress = 'Здесь будет путь'
 
 
 function addTag() {
