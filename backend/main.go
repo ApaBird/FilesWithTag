@@ -3,6 +3,7 @@ package main
 import (
 	//filesmanager "FilesWithTag/FilesManager"
 
+	filesmanager "FilesWithTag/FilesManager"
 	"FilesWithTag/service"
 	"fmt"
 	"net/http"
@@ -18,7 +19,7 @@ import (
 func main() {
 	config := Readconfig("config.json")
 
-	//filesmanager.AnalyzeStorage()
+	filesmanager.AnalyzeStorage()
 
 	r := mux.NewRouter()
 	c := cors.New(cors.Options{
