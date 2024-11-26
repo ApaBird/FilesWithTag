@@ -3,6 +3,7 @@ package main
 import (
 	//filesmanager "FilesWithTag/FilesManager"
 
+	filesmanager "FilesWithTag/FilesManager"
 	"FilesWithTag/service"
 	"fmt"
 	"net/http"
@@ -11,10 +12,14 @@ import (
 	"github.com/rs/cors"
 )
 
+// TODO: Добавление мета тегов
+// TODO: Собирать мета теги и хранить
+// TODO: ендпоинт для выдачи существующих мета тегов
+
 func main() {
 	config := Readconfig("config.json")
 
-	//filesmanager.AnalyzeStorage()
+	filesmanager.AnalyzeStorage()
 
 	r := mux.NewRouter()
 	c := cors.New(cors.Options{
@@ -27,7 +32,7 @@ func main() {
 	r.HandleFunc("/FileByte", service.Wrapper(service.GetFileByte)).Methods("GET")
 	r.HandleFunc("/OsTree", service.Wrapper(service.OsTreeHandler)).Methods("GET")
 	r.HandleFunc("/GetMeta", service.Wrapper(service.GetMetaData)).Methods("GET")
-	r.PathPrefix("/view").HandlerFunc(service.ViewHandler)
+	r.PathPrefix("/").HandlerFunc(service.ViewHandler)
 	fmt.Println("Сервер запущен")
 	http.ListenAndServe(":"+config.Port, c.Handler(r))
 }
