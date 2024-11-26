@@ -24,6 +24,7 @@ func main() {
 	})
 
 	r.HandleFunc("/Files", service.Wrapper(service.FilesHandler)).Methods("GET")
+	r.HandleFunc("/FileByte", service.Wrapper(service.GetFileByte)).Methods("GET")
 	r.HandleFunc("/OsTree", service.Wrapper(service.OsTreeHandler)).Methods("GET")
 	r.HandleFunc("/GetMeta", service.Wrapper(service.GetMetaData)).Methods("GET")
 	r.PathPrefix("/view").HandlerFunc(service.ViewHandler)

@@ -5,9 +5,6 @@ import (
 	"os"
 	"strings"
 	"time"
-
-	"github.com/rwcarlsen/goexif/exif"
-	"github.com/rwcarlsen/goexif/tiff"
 )
 
 type convector struct {
@@ -15,12 +12,6 @@ type convector struct {
 }
 
 var OsTree = Dir{}
-
-func (c convector) Walk(name exif.FieldName, tag *tiff.Tag) error {
-	fmt.Println("Ok")
-	c.List.Meta[name] = tag
-	return nil
-}
 
 func FilesInDir(dir string) ([]FileInfo, error) {
 	files, err := os.ReadDir(dir)
@@ -32,30 +23,24 @@ func FilesInDir(dir string) ([]FileInfo, error) {
 		if file.IsDir() {
 			continue
 		}
-		f, err := os.Open(dir + "/" + file.Name())
-		if err != nil {
-			return nil, err
-		}
 
-		info, err := exif.Decode(f)
-		if err != nil {
-			fmt.Println("[ERROR]", err)
-			continue
-		}
-		var c convector
-		c.List = FileInfo{
+		info := FileInfo{
 			Name: file.Name(),
 			Dir:  dir,
-			Meta: make(map[interface{}]interface{}, 0),
 		}
 
-		info.Walk(c)
-
-		f.Close()
-
-		list = append(list, c.List)
+		list = append(list, info)
 	}
 	return list, nil
+}
+
+func BytesFile(path string) (*ByteFile, error) {
+	file, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ByteFile{Name: path, Content: file}, nil
 }
 
 func AnalyzeStorage() {

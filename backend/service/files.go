@@ -24,3 +24,17 @@ func FilesHandler(w http.ResponseWriter, r *http.Request) any {
 
 	return FilesInfo{Files: files}
 }
+
+func GetFileByte(w http.ResponseWriter, r *http.Request) any {
+	path := r.URL.Query().Get("Path")
+	if path == "" {
+		return ResponceError{Error: ErrParametrs.Error(), Status: http.StatusBadRequest}
+	}
+
+	file, err := filesmanager.BytesFile(path)
+	if err != nil {
+		return ResponceError{Error: err.Error(), Status: http.StatusInternalServerError}
+	}
+
+	return *file
+}
