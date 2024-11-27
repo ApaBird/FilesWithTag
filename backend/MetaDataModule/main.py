@@ -1,5 +1,6 @@
 import fastapi
 import metaReader
+import os
 
 app = fastapi.FastAPI()
 
