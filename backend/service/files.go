@@ -4,20 +4,33 @@ import (
 	filesmanager "FilesWithTag/FilesManager"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type FilesInfo struct {
-	Files []filesmanager.File
+	Files []filesmanager.Content
 }
 
 func FilesHandler(w http.ResponseWriter, r *http.Request) any {
 	fmt.Println("F")
 	path := r.URL.Query().Get("Path")
-	if path == "" {
+	count := r.URL.Query().Get("Count")
+	offset := r.URL.Query().Get("Offset")
+	if path == "" || count == "" || offset == "" {
 		return ResponceError{Error: ErrParametrs.Error(), Status: http.StatusBadRequest}
 	}
 
-	files, err := filesmanager.FilesInDir(path)
+	countInt, err := strconv.Atoi(count)
+	if err != nil {
+		return ResponceError{Error: ErrNotCorrectTypeParametr.Error(), Status: http.StatusBadRequest}
+	}
+
+	offsetInt, err := strconv.Atoi(offset)
+	if err != nil {
+		return ResponceError{Error: ErrNotCorrectTypeParametr.Error(), Status: http.StatusBadRequest}
+	}
+
+	files, err := filesmanager.FilesInDir(path, countInt, offsetInt)
 	if err != nil {
 		return ResponceError{Error: err.Error(), Status: http.StatusInternalServerError}
 	}
@@ -31,9 +44,7 @@ func GetFileByte(w http.ResponseWriter, r *http.Request) any {
 		return ResponceError{Error: ErrParametrs.Error(), Status: http.StatusBadRequest}
 	}
 
-	file := filesmanager.OpenFile(path)
-
-	b, err := file.GetContent()
+	file, b, err := filesmanager.OpenFile(path)
 	if err != nil {
 		return ResponceError{Error: err.Error(), Status: http.StatusInternalServerError}
 	}

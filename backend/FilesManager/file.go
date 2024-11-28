@@ -18,7 +18,24 @@ type File struct {
 
 var ()
 
-func OpenFile(filePath string) *File {
+func OpenFile(filePath string) (file *File, content []byte, err error) {
+	f := File{
+		Name:  path.Base(filePath),
+		ftype: path.Ext(filePath),
+		dir:   path.Dir(filePath),
+	}
+
+	b, err := f.loadFile()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	f.Tags, f.haveTags = extractTags(b)
+
+	return &f, b, nil
+}
+
+func OpenFileWithTags(filePath string) *File {
 	f := File{
 		Name:  path.Base(filePath),
 		ftype: path.Ext(filePath),
@@ -86,15 +103,21 @@ func (f *File) extractTags() {
 		}
 	}
 
+	f.Tags, f.haveTags = extractTags(content)
+}
+
+func extractTags(content []byte) (tags []string, haveTags bool) {
 	tagsIndex := bytes.Index(content, []byte("Tags:"))
 	if tagsIndex != -1 {
-		tags := string(content[tagsIndex:])
-		f.Tags = append(f.Tags, strings.Split(tags[strings.Index(tags, ":")+1:], ",")...)
-		f.haveTags = true
+		tagsStr := string(content[tagsIndex:])
+		tags = append(tags, strings.Split(tagsStr[strings.Index(tagsStr, ":")+1:], ",")...)
+		haveTags = true
 	} else {
-		f.Tags = []string{}
-		f.haveTags = false
+		tags = []string{}
+		haveTags = false
 	}
+
+	return tags, haveTags
 }
 
 func (f *File) GetTags() []string {

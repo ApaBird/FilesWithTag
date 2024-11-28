@@ -12,7 +12,13 @@ type ResponceError struct {
 	Status int    `json:"status"`
 }
 
-var ErrParametrs = errors.New("Отсутсвуют обязательные параметры")
+type Responce struct {
+	Status  int    `json:"status"`
+	Comment string `json:"comment"`
+}
+
+var ErrParametrs = errors.New("отсутсвуют обязательные параметры")
+var ErrNotCorrectTypeParametr = errors.New("некорректный тип параметра")
 
 func Wrapper(f func(w http.ResponseWriter, r *http.Request) any) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {

@@ -11,25 +11,37 @@ type convector struct {
 	List File
 }
 
+type Content struct {
+	Name    string
+	Tags    []string
+	Content []byte
+}
+
 var OsTree = Dir{}
 
-func FilesInDir(dir string) ([]File, error) {
+func FilesInDir(dir string, count, offset int) ([]Content, error) {
 	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
-	var list []File
+	var list []Content
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
 
-		info := File{
-			Name: file.Name(),
-			dir:  dir,
+		f, b, err := OpenFile(dir + "/" + file.Name())
+		if err != nil {
+			continue
 		}
 
-		list = append(list, info)
+		res := Content{
+			Name:    file.Name(),
+			Tags:    f.GetTags(),
+			Content: b,
+		}
+
+		list = append(list, res)
 	}
 	return list, nil
 }
