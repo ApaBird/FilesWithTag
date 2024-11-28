@@ -1,82 +1,115 @@
 package filesmanager
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"path"
 	"strings"
-	"time"
 )
 
-type convector struct {
-	List FileInfo
+type File struct {
+	Name     string
+	ftype    string
+	dir      string
+	Tags     []string
+	haveTags bool
 }
 
-var OsTree = Dir{}
+var ()
 
-func FilesInDir(dir string) ([]FileInfo, error) {
-	files, err := os.ReadDir(dir)
+func OpenFile(filePath string) *File {
+	f := File{
+		Name:  path.Base(filePath),
+		ftype: path.Ext(filePath),
+		dir:   path.Dir(filePath),
+	}
+
+	f.extractTags()
+
+	return &f
+}
+
+func (f *File) GetContent() ([]byte, error) {
+	return f.loadFile()
+}
+
+func (f *File) loadFile() (file []byte, err error) {
+	file, err = os.ReadFile(f.dir + "/" + f.Name + "." + f.ftype)
 	if err != nil {
 		return nil, err
 	}
-	var list []FileInfo
-	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
 
-		info := FileInfo{
-			Name: file.Name(),
-			Dir:  dir,
-		}
-
-		list = append(list, info)
-	}
-	return list, nil
+	return file, nil
 }
 
-func BytesFile(path string) (*ByteFile, error) {
-	file, err := os.ReadFile(path)
+func (f *File) extractTags() {
+	file, err := os.Open(f.dir + "/" + f.Name + "." + f.ftype)
 	if err != nil {
-		return nil, err
+		return
+	}
+	defer file.Close()
+
+	stat, err := file.Stat()
+	if err != nil {
+		return
 	}
 
-	return &ByteFile{Name: path, Content: file}, nil
-}
+	step := 100
+	if stat.Size() < int64(step) {
+		step = int(stat.Size())
+	}
 
-func AnalyzeStorage() {
-	t := time.Now()
-	pull := make([]string, 0)
-	pull = append(pull, "C:/")
+	content := []byte{}
 
-	OsTree = NewDir("C:", "C:/")
-
-	for len(pull) > 0 {
-		dir := pull[0]
-		pull = pull[1:]
-		if strings.Contains(dir, "Windows") || strings.Contains(dir, "Program Files") || strings.Contains(dir, "ProgramData") {
-			continue
+	for i := 1; ; i++ {
+		offset := stat.Size() - int64(step)*int64(i)
+		if offset < 0 {
+			offset = 0
 		}
-		files, err := os.ReadDir(dir)
+
+		sizeBuff := step
+		if int64(len(content)+sizeBuff) > stat.Size() {
+			sizeBuff = int(stat.Size()) - len(content)
+		}
+
+		buf := make([]byte, sizeBuff)
+		_, err := file.ReadAt(buf, offset)
 		if err != nil {
 			fmt.Println(err.Error())
-			continue
+			break
 		}
 
-		for _, file := range files {
-			if file.IsDir() {
-				pull = append(pull, dir+"/"+file.Name())
-				d := OsTree.FindDir(dir)
-				// fmt.Println("=>", strings.Count(dir, "/"))
-				// if strings.Count(dir, "/") >= 3 {
-				// 	time.Sleep(time.Second * 10)
-				// }
-				if d == nil {
-					continue
-				}
-				d.AddDirByName(file.Name())
-			}
+		content = append(content, buf[:]...)
+		if bytes.Contains(content, []byte("Tags:")) {
+			break
 		}
 	}
 
-	fmt.Println("Времения потрачено:", time.Since(t))
+	tagsIndex := bytes.Index(content, []byte("Tags:"))
+	if tagsIndex != -1 {
+		tags := string(content[tagsIndex:])
+		f.Tags = append(f.Tags, strings.Split(tags[strings.Index(tags, ":")+1:], ",")...)
+		f.haveTags = true
+	} else {
+		f.Tags = []string{}
+		f.haveTags = false
+	}
+}
+
+func (f *File) GetTags() []string {
+	return f.Tags
+}
+
+func (f *File) AddTag(tag string) {
+	if !f.haveTags {
+		os.WriteFile(f.dir+"/"+f.Name+"."+f.ftype, []byte("Tags:"), 0644)
+	}
+
+	if len(f.Tags) == 0 {
+		os.WriteFile(f.dir+"/"+f.Name+"."+f.ftype, []byte(tag), 0644)
+	} else {
+		os.WriteFile(f.dir+"/"+f.Name+"."+f.ftype, []byte(","+tag), 0644)
+	}
+	f.Tags = append(f.Tags, tag)
 }

@@ -1,9 +1,25 @@
 package service
 
-import "net/http"
+import (
+	filesmanager "FilesWithTag/FilesManager"
+	"net/http"
+)
 
-func GetMetaData(w http.ResponseWriter, r *http.Request) any {
-	http.Redirect(w, r, "http://localhost:8051"+r.URL.String(), http.StatusMovedPermanently)
+func GetTags(w http.ResponseWriter, r *http.Request) any {
+	path := r.URL.Query().Get("Path")
+	if path == "" {
+		return ResponceError{Error: ErrParametrs.Error(), Status: http.StatusBadRequest}
+	}
 
-	return nil
+	file := filesmanager.OpenFile(path)
+
+	responce := struct {
+		FilName string
+		Tags    []string
+	}{
+		FilName: file.Name,
+		Tags:    file.GetTags(),
+	}
+
+	return responce
 }

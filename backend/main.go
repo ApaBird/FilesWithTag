@@ -31,7 +31,7 @@ func main() {
 	r.HandleFunc("/Files", service.Wrapper(service.FilesHandler)).Methods("GET")
 	r.HandleFunc("/FileByte", service.Wrapper(service.GetFileByte)).Methods("GET")
 	r.HandleFunc("/OsTree", service.Wrapper(service.OsTreeHandler)).Methods("GET")
-	r.HandleFunc("/GetMeta", service.Wrapper(service.GetMetaData)).Methods("GET")
+	r.HandleFunc("/GetMeta", service.Wrapper(service.GetTags)).Methods("GET")
 	r.PathPrefix("/").HandlerFunc(service.ViewHandler)
 	fmt.Println("Сервер запущен")
 	http.ListenAndServe(":"+config.Port, c.Handler(r))

@@ -7,7 +7,7 @@ import (
 )
 
 type FilesInfo struct {
-	Files []filesmanager.FileInfo
+	Files []filesmanager.File
 }
 
 func FilesHandler(w http.ResponseWriter, r *http.Request) any {
@@ -31,10 +31,20 @@ func GetFileByte(w http.ResponseWriter, r *http.Request) any {
 		return ResponceError{Error: ErrParametrs.Error(), Status: http.StatusBadRequest}
 	}
 
-	file, err := filesmanager.BytesFile(path)
+	file := filesmanager.OpenFile(path)
+
+	b, err := file.GetContent()
 	if err != nil {
 		return ResponceError{Error: err.Error(), Status: http.StatusInternalServerError}
 	}
 
-	return *file
+	responce := struct {
+		FileName string
+		Content  []byte
+	}{
+		FileName: file.Name,
+		Content:  b,
+	}
+
+	return responce
 }
