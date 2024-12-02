@@ -6,6 +6,8 @@ definitions:
         items:
           type: integer
         type: array
+      ftype:
+        type: string
       name:
         type: string
       tags:
@@ -161,6 +163,15 @@ paths:
         in: query
         name: Offset
         required: true
+        type: string
+      - description: Тип файлов
+        enum:
+        - Image
+        - Music
+        - Video
+        - Text
+        in: query
+        name: Ftype
         type: string
       produces:
       - application/json

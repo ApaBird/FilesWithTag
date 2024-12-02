@@ -24,6 +24,7 @@ type FileByte struct {
 // @Param			Path	query		string			true	"Путь до папки"
 // @Param			Count	query		string			true	"Количество"
 // @Param			Offset	query		string			true	"Отступ"
+// @Param			Ftype	query		string			false	"Тип файлов" Enums(Image, Music, Video, Text)
 // @Success		200		{object}	FilesInfo	"список файлов"
 // @Failure		400,500		{object}	ResponceError	"error"
 // @Router			/Files [get]
@@ -31,8 +32,13 @@ func FilesHandler(w http.ResponseWriter, r *http.Request) any {
 	path := r.URL.Query().Get("Path")
 	count := r.URL.Query().Get("Count")
 	offset := r.URL.Query().Get("Offset")
+	ftype := r.URL.Query().Get("Ftype")
 	if path == "" || count == "" || offset == "" {
 		return ResponceError{Error: ErrParametrs.Error(), Status: http.StatusBadRequest}
+	}
+
+	if ftype == "" {
+		ftype = "All"
 	}
 
 	countInt, err := strconv.Atoi(count)
@@ -45,7 +51,7 @@ func FilesHandler(w http.ResponseWriter, r *http.Request) any {
 		return ResponceError{Error: ErrNotCorrectTypeParametr.Error(), Status: http.StatusBadRequest}
 	}
 
-	files, err := filesmanager.FilesInDir(path, countInt, offsetInt)
+	files, err := filesmanager.FilesInDir(path, countInt, offsetInt, ftype)
 	if err != nil {
 		return ResponceError{Error: err.Error(), Status: http.StatusInternalServerError}
 	}

@@ -142,6 +142,18 @@ const docTemplate = `{
                         "name": "Offset",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "enum": [
+                            "Image",
+                            "Music",
+                            "Video",
+                            "Text"
+                        ],
+                        "type": "string",
+                        "description": "Тип файлов",
+                        "name": "Ftype",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -239,6 +251,9 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "ftype": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
