@@ -1,0 +1,221 @@
+basePath: /
+definitions:
+  filesmanager.Content:
+    properties:
+      content:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+  filesmanager.Dir:
+    properties:
+      content:
+        items:
+          $ref: '#/definitions/filesmanager.Dir'
+        type: array
+      dir:
+        type: string
+      name:
+        type: string
+    type: object
+  service.AddTagsRequest:
+    properties:
+      Path:
+        type: string
+      Tags:
+        items:
+          type: string
+        type: array
+    type: object
+  service.FileByte:
+    properties:
+      content:
+        items:
+          type: integer
+        type: array
+      fileName:
+        type: string
+    type: object
+  service.FilesInfo:
+    properties:
+      files:
+        items:
+          $ref: '#/definitions/filesmanager.Content'
+        type: array
+    type: object
+  service.Responce:
+    properties:
+      comment:
+        type: string
+      status:
+        type: integer
+    type: object
+  service.ResponceError:
+    properties:
+      error:
+        type: string
+      status:
+        type: integer
+    type: object
+  service.ResponceFile:
+    properties:
+      filName:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: FilesWithTag API
+  title: FilesWithTag API
+  version: "2.0"
+paths:
+  /AddMeta:
+    post:
+      consumes:
+      - application/json
+      description: Добавление тегов по пути до файла
+      operationId: addTags
+      parameters:
+      - description: path
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/service.AddTagsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: tags
+          schema:
+            $ref: '#/definitions/service.Responce'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+      summary: Добавление тегов
+      tags:
+      - file
+  /FileByte:
+    get:
+      consumes:
+      - application/json
+      description: Получение файла в формате байт строки
+      operationId: GetFilesByte
+      parameters:
+      - description: Путь до файла
+        in: query
+        name: Path
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: имя файла и его содержимое
+          schema:
+            $ref: '#/definitions/service.FileByte'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+      summary: Получение файла
+      tags:
+      - file
+  /Files:
+    get:
+      consumes:
+      - application/json
+      description: Получение тегов по пути до файла
+      operationId: GetFilesInDir
+      parameters:
+      - description: Путь до папки
+        in: query
+        name: Path
+        required: true
+        type: string
+      - description: Количество
+        in: query
+        name: Count
+        required: true
+        type: string
+      - description: Отступ
+        in: query
+        name: Offset
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: список файлов
+          schema:
+            $ref: '#/definitions/service.FilesInfo'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+      summary: Получение тегов
+      tags:
+      - file
+  /GetMeta:
+    get:
+      consumes:
+      - application/json
+      description: Получение тегов по пути до файла
+      operationId: getTags
+      parameters:
+      - description: path
+        in: query
+        name: input
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: tags
+          schema:
+            $ref: '#/definitions/service.ResponceFile'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+      summary: Получение тегов
+      tags:
+      - file
+  /OsTree:
+    get:
+      consumes:
+      - application/json
+      description: Дерево папок, дерево состовляется в момент старта сервера
+      operationId: GetOsTree
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: дерево папок
+          schema:
+            $ref: '#/definitions/filesmanager.Dir'
+      summary: Дерево папок
+      tags:
+      - OsTree
+swagger: "2.0"

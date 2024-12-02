@@ -2,7 +2,6 @@ package service
 
 import (
 	filesmanager "FilesWithTag/FilesManager"
-	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -11,8 +10,24 @@ type FilesInfo struct {
 	Files []filesmanager.Content
 }
 
+type FileByte struct {
+	FileName string
+	Content  []byte
+}
+
+// @Summary		Получение тегов
+// @Tags			file
+// @Description	Получение тегов по пути до файла
+// @ID				GetFilesInDir
+// @Accept			json
+// @Produce		json
+// @Param			Path	query		string			true	"Путь до папки"
+// @Param			Count	query		string			true	"Количество"
+// @Param			Offset	query		string			true	"Отступ"
+// @Success		200		{object}	FilesInfo	"список файлов"
+// @Failure		400,500		{object}	ResponceError	"error"
+// @Router			/Files [get]
 func FilesHandler(w http.ResponseWriter, r *http.Request) any {
-	fmt.Println("F")
 	path := r.URL.Query().Get("Path")
 	count := r.URL.Query().Get("Count")
 	offset := r.URL.Query().Get("Offset")
@@ -38,6 +53,16 @@ func FilesHandler(w http.ResponseWriter, r *http.Request) any {
 	return FilesInfo{Files: files}
 }
 
+// @Summary		Получение файла
+// @Tags			file
+// @Description	Получение файла в формате байт строки
+// @ID				GetFilesByte
+// @Accept			json
+// @Produce		json
+// @Param			Path	query		string			true	"Путь до файла"
+// @Success		200		{object}	FileByte	"имя файла и его содержимое"
+// @Failure		400,500		{object}	ResponceError	"error"
+// @Router			/FileByte [get]
 func GetFileByte(w http.ResponseWriter, r *http.Request) any {
 	path := r.URL.Query().Get("Path")
 	if path == "" {
@@ -49,10 +74,7 @@ func GetFileByte(w http.ResponseWriter, r *http.Request) any {
 		return ResponceError{Error: err.Error(), Status: http.StatusInternalServerError}
 	}
 
-	responce := struct {
-		FileName string
-		Content  []byte
-	}{
+	responce := FileByte{
 		FileName: file.Name,
 		Content:  b,
 	}
