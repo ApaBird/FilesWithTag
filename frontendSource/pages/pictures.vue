@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-col gap-3 max-h-[calc(100vh-60px)]">
+  <div class="flex flex-col gap-3 max-h-[calc(100vh-130px)]">
     <UIFilters />
     <div
-      class="mx-auto flex gap-4 flex-wrap overflow-y-auto scrollbar h-[calc(100%-100px)]"
+       id="itemsId" class="mx-auto flex gap-4 flex-wrap overflow-y-auto scrollbar h-[calc(100%-100px)]"
     >
       <div
         class="flex max-h-[360px] xl:max-w-[400px] sm:max-w-[200px] flex flex-col gap-1"
@@ -40,5 +40,13 @@ const activePicture = itemStore();
 
 function onClickPicture(picture) {
   activePicture.setItem(picture);
+}
+
+onMounted(() => {
+  document.getElementById('itemsId').addEventListener('scroll', handleScroll)
+})
+
+const handleScroll = () => {
+  console.log(window)
 }
 </script>

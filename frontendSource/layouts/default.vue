@@ -4,7 +4,7 @@
       <input
         class="bg-[#1f1f1f] rounded-[8px] px-2 py-1 text-white"
         :placeholder="pathAddress"
-        disabled
+        v-model.lazy="addressStore().path"
       />
       <slot></slot>
     </div>

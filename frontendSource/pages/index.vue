@@ -1,6 +1,6 @@
 <template>
   <div class="h-screen flex flex-col gap-4 overflow-hidden">
-    <div class="max-h-[220px] min-h-[40px] overflow-y-auto scrollbar">
+    <div class="max-h-[220px] min-h-[100px] overflow-y-auto scrollbar">
       <div class="grid grid-cols-6 gap-4 mr-2">
         <div
           v-if="pathAddress != 'C:/'"
@@ -18,7 +18,7 @@
         </div>
         <div
           v-for="folder in activeFolderContent"
-          class="h-[40px] rounded-[8px] text-white flex justify-start items-center bg-[#1f1f1f] hover:cursor-pointer hover:bg-[#444746] p-4"
+          class="h-[40px] rounded-[8px] min-h-[40px] text-white flex justify-start items-center bg-[#1f1f1f] hover:cursor-pointer hover:bg-[#444746] p-4"
           @click="storePathAddress.setPath(folder.dir)"
         >
           <div class="flex w-[30px]">
@@ -72,7 +72,7 @@ watch(
   () => pathAddress.value,
   async (value) => {
     itemsFolder.value = []
-    $fetch(`http://127.0.0.1:8050/Files?Count=20&Offset=0&Path=${value}`).then((t) => {
+    $fetch(`http://127.0.0.1:8050/Files?Count=20&Offset=0&Path=${value}&Ftype=Image`).then((t) => {
       itemsFolder.value = t.Files;
     });
   }
@@ -81,5 +81,6 @@ watch(
 onMounted(async () => {
   await getFolders();
 });
+
 </script>
 
