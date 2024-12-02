@@ -112,6 +112,37 @@ paths:
       summary: Добавление тегов
       tags:
       - file
+  /DelMeta:
+    post:
+      consumes:
+      - application/json
+      description: Удаление тегов по пути до файла
+      operationId: delTags
+      parameters:
+      - description: path
+        in: body
+        name: AddTagsRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.AddTagsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: tags
+          schema:
+            $ref: '#/definitions/service.Responce'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+      summary: Удаление тегов
+      tags:
+      - file
   /FileByte:
     get:
       consumes:

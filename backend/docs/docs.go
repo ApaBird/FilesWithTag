@@ -62,6 +62,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/DelMeta": {
+            "post": {
+                "description": "Удаление тегов по пути до файла",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "Удаление тегов",
+                "operationId": "delTags",
+                "parameters": [
+                    {
+                        "description": "path",
+                        "name": "AddTagsRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.AddTagsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "tags",
+                        "schema": {
+                            "$ref": "#/definitions/service.Responce"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    }
+                }
+            }
+        },
         "/FileByte": {
             "get": {
                 "description": "Получение файла в формате байт строки",

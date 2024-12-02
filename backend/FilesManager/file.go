@@ -12,8 +12,15 @@ type File struct {
 	Name     string
 	ftype    string
 	dir      string
-	Tags     []string
+	Tags     *Set
 	haveTags bool
+}
+
+var Ftype = map[string]string{
+	"Image": ".jpg, .png, .gif, .bmp, .svg, .webp",
+	"Music": ".mp3, .wav, .ogg, .aac, .m4a, .flac, .wma, .m3u",
+	"Video": ".mp4, .mkv, .avi, .wmv, .flv, .mov, .webm, .mpeg",
+	"Text":  ".txt, .pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .csv, .json",
 }
 
 func OpenFile(filePath string) (file *File, content []byte, err error) {
@@ -119,21 +126,23 @@ func (f *File) extractTags() {
 	f.Tags, f.haveTags = extractTags(content)
 }
 
-func extractTags(content []byte) (tags []string, haveTags bool) {
+// TODO при пустом "Tags:" парсит тег "", по сути не существующий тег
+func extractTags(content []byte) (tags *Set, haveTags bool) {
 	tagsIndex := bytes.Index(content, []byte("Tags:"))
+	tags = NewSet()
 	if tagsIndex != -1 {
 		tagsStr := string(content[tagsIndex:])
-		tags = append(tags, strings.Split(tagsStr[strings.Index(tagsStr, ":")+1:], ",")...)
+		tags.AppendSlice(strings.Split(tagsStr[strings.Index(tagsStr, ":")+1:], ","))
 		haveTags = true
 	} else {
-		tags = []string{}
+		tags = NewSet()
 		haveTags = false
 	}
 
 	return tags, haveTags
 }
 
-func (f *File) GetTags() []string {
+func (f *File) GetTags() *Set {
 	return f.Tags
 }
 
@@ -144,13 +153,19 @@ func (f *File) AddTag(tag string) error {
 	}
 	defer file.Close()
 
+	fmt.Println("[DEBUG]", f.Tags.ToString())
+
+	if f.Tags.Contains(tag) {
+		return nil
+	}
+
 	if !f.haveTags {
 		if _, err := file.WriteString("Tags:"); err != nil {
 			return err
 		}
 	}
 
-	if len(f.Tags) == 0 {
+	if f.Tags.Size() == 0 {
 		if _, err := file.WriteString(tag); err != nil {
 			return err
 		}
@@ -159,6 +174,45 @@ func (f *File) AddTag(tag string) error {
 			return err
 		}
 	}
-	f.Tags = append(f.Tags, tag)
+	f.Tags.Append(tag)
 	return nil
+}
+
+func (f *File) RemoveTag(tag string) error {
+	if !f.Tags.Contains(tag) {
+		return nil
+	}
+
+	stat, err := os.Stat(f.dir + "/" + f.Name)
+	if err != nil {
+		return err
+	}
+
+	sizeTag := len(f.Tags.ToString())
+	fmt.Println("[DEBUG]", sizeTag, f.Tags.ToString())
+
+	if err := os.Truncate(f.dir+"/"+f.Name, stat.Size()-int64(sizeTag)); err != nil {
+		return err
+	}
+
+	f.Tags.Remove(tag)
+
+	file, err := os.OpenFile(f.dir+"/"+f.Name, os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	if _, err := file.WriteString("Tags:"); err != nil {
+		return err
+	}
+
+	for _, t := range f.Tags.ToSlice() {
+		if _, err := file.WriteString("," + t); err != nil {
+			return err
+		}
+	}
+
+	return nil
+
 }

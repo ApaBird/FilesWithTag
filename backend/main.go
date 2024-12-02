@@ -43,6 +43,7 @@ func main() {
 	r.HandleFunc("/OsTree", service.Wrapper(service.OsTreeHandler)).Methods("GET")
 	r.HandleFunc("/GetMeta", service.Wrapper(service.GetTags)).Methods("GET")
 	r.HandleFunc("/AddMeta", service.Wrapper(service.AddTags)).Methods("POST")
+	r.HandleFunc("/DelMeta", service.Wrapper(service.DelTags)).Methods("POST")
 	r.PathPrefix("/").HandlerFunc(service.ViewHandler)
 
 	fmt.Println("Сервер запущен")

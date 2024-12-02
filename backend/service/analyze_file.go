@@ -36,7 +36,7 @@ func GetTags(w http.ResponseWriter, r *http.Request) any {
 
 	responce := ResponceFile{
 		FilName: file.Name,
-		Tags:    file.GetTags(),
+		Tags:    file.GetTags().ToSlice(),
 	}
 
 	return responce
@@ -67,6 +67,38 @@ func AddTags(w http.ResponseWriter, r *http.Request) any {
 
 	for _, tag := range body.Tags {
 		if err := file.AddTag(tag); err != nil {
+			return ResponceError{Error: err.Error(), Status: http.StatusInternalServerError}
+		}
+	}
+
+	return Responce{Status: http.StatusOK, Comment: "OK"}
+}
+
+// @Summary		Удаление тегов
+// @Tags			file
+// @Description	Удаление тегов по пути до файла
+// @ID				delTags
+// @Accept			json
+// @Produce		json
+// @Param			AddTagsRequest	body		AddTagsRequest	true	"path"
+// @Success		200		{object}	Responce		"tags"
+// @Failure		400,500		{object}	ResponceError	"error"
+// @Router			/DelMeta [post]
+func DelTags(w http.ResponseWriter, r *http.Request) any {
+	body := AddTagsRequest{}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		return ResponceError{Error: err.Error(), Status: http.StatusBadRequest}
+	}
+
+	if body.Path == "" || len(body.Tags) == 0 {
+		return ResponceError{Error: ErrParametrs.Error(), Status: http.StatusBadRequest}
+	}
+
+	file := filesmanager.OpenFileWithTags(body.Path)
+
+	for _, tag := range body.Tags {
+		if err := file.RemoveTag(tag); err != nil {
 			return ResponceError{Error: err.Error(), Status: http.StatusInternalServerError}
 		}
 	}
