@@ -3,6 +3,7 @@ package filesmanager
 import (
 	"fmt"
 	"os"
+	"path"
 	"strings"
 	"time"
 )
@@ -13,13 +14,21 @@ type convector struct {
 
 type Content struct {
 	Name    string
+	Ftype   string
 	Tags    []string
 	Content []byte
 }
 
+var Ftype = map[string]string{
+	"Image": ".jpg, .png, .gif, .bmp, .svg, .webp",
+	"Music": ".mp3, .wav, .ogg, .aac, .m4a, .flac, .wma, .m3u",
+	"Video": ".mp4, .mkv, .avi, .wmv, .flv, .mov, .webm, .mpeg",
+	"Text":  ".txt, .pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .csv, .json",
+}
+
 var OsTree = Dir{}
 
-func FilesInDir(dir string, count, offset int) ([]Content, error) {
+func FilesInDir(dir string, count, offset int, ftype string) ([]Content, error) {
 	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
@@ -28,6 +37,12 @@ func FilesInDir(dir string, count, offset int) ([]Content, error) {
 	for _, file := range files {
 		if file.IsDir() {
 			continue
+		}
+
+		if ftype != "All" {
+			if !strings.Contains(Ftype[ftype], path.Ext(file.Name())) {
+				continue
+			}
 		}
 
 		if offset > 0 {
@@ -44,6 +59,7 @@ func FilesInDir(dir string, count, offset int) ([]Content, error) {
 
 		res := Content{
 			Name:    file.Name(),
+			Ftype:   f.ftype,
 			Tags:    f.GetTags(),
 			Content: b,
 		}
