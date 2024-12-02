@@ -30,6 +30,11 @@ func FilesInDir(dir string, count, offset int) ([]Content, error) {
 			continue
 		}
 
+		if offset > 0 {
+			offset -= 1
+			continue
+		}
+
 		pathToFile := strings.Replace(dir+"/"+file.Name(), "\\", "/", -1)
 		f, b, err := OpenFile(pathToFile)
 		if err != nil {
@@ -44,6 +49,10 @@ func FilesInDir(dir string, count, offset int) ([]Content, error) {
 		}
 
 		list = append(list, res)
+		count -= 1
+		if count == 0 {
+			break
+		}
 	}
 	return list, nil
 }

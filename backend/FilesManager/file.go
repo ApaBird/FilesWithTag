@@ -16,9 +16,9 @@ type File struct {
 	haveTags bool
 }
 
-var ()
-
 func OpenFile(filePath string) (file *File, content []byte, err error) {
+	filePath = strings.Replace(filePath, "\\", "/", -1)
+
 	f := File{
 		Name:  path.Base(filePath),
 		ftype: path.Ext(filePath),
@@ -27,20 +27,26 @@ func OpenFile(filePath string) (file *File, content []byte, err error) {
 
 	b, err := f.loadFile()
 	if err != nil {
+		fmt.Println("[ERROR] ", err.Error())
 		return nil, nil, err
 	}
 
 	f.Tags, f.haveTags = extractTags(b)
 
 	return &f, b, nil
+
 }
 
 func OpenFileWithTags(filePath string) *File {
+	filePath = strings.Replace(filePath, "\\", "/", -1)
 	f := File{
 		Name:  path.Base(filePath),
 		ftype: path.Ext(filePath),
 		dir:   path.Dir(filePath),
 	}
+
+	fmt.Println("[DEBUG]", f.dir)
+	fmt.Println("[DEBUG]", f.Name)
 
 	f.extractTags()
 
@@ -61,6 +67,7 @@ func (f *File) loadFile() (file []byte, err error) {
 }
 
 func (f *File) extractTags() {
+	fmt.Println("[DEBUG]", f.dir+"/"+f.Name)
 	file, err := os.Open(f.dir + "/" + f.Name)
 	if err != nil {
 		return
@@ -77,7 +84,7 @@ func (f *File) extractTags() {
 		step = int(stat.Size())
 	}
 
-	content := []byte{}
+	content := make([]byte, 0)
 
 	for i := 1; ; i++ {
 		offset := stat.Size() - int64(step)*int64(i)
@@ -96,11 +103,17 @@ func (f *File) extractTags() {
 			fmt.Println(err.Error())
 			break
 		}
+		fmt.Println(stat.Size(), sizeBuff, offset, len(content), step)
 
 		content = append(content, buf[:]...)
 		if bytes.Contains(content, []byte("Tags:")) {
 			break
 		}
+
+		if len(content) >= int(stat.Size()) {
+			break
+		}
+		//time.Sleep(time.Second * 30)
 	}
 
 	f.Tags, f.haveTags = extractTags(content)
@@ -124,15 +137,28 @@ func (f *File) GetTags() []string {
 	return f.Tags
 }
 
-func (f *File) AddTag(tag string) {
+func (f *File) AddTag(tag string) error {
+	file, err := os.OpenFile(f.dir+"/"+f.Name, os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
 	if !f.haveTags {
-		os.WriteFile(f.dir+"/"+f.Name+"."+f.ftype, []byte("Tags:"), 0644)
+		if _, err := file.WriteString("Tags:"); err != nil {
+			return err
+		}
 	}
 
 	if len(f.Tags) == 0 {
-		os.WriteFile(f.dir+"/"+f.Name+"."+f.ftype, []byte(tag), 0644)
+		if _, err := file.WriteString(tag); err != nil {
+			return err
+		}
 	} else {
-		os.WriteFile(f.dir+"/"+f.Name+"."+f.ftype, []byte(","+tag), 0644)
+		if _, err := file.WriteString("," + tag); err != nil {
+			return err
+		}
 	}
 	f.Tags = append(f.Tags, tag)
+	return nil
 }

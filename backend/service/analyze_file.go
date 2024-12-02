@@ -50,7 +50,7 @@ func GetTags(w http.ResponseWriter, r *http.Request) any {
 // @Produce		json
 // @Param			AddTagsRequest	body		AddTagsRequest	true	"path"
 // @Success		200		{object}	Responce		"tags"
-// @Failure		400		{object}	ResponceError	"error"
+// @Failure		400,500		{object}	ResponceError	"error"
 // @Router			/AddMeta [post]
 func AddTags(w http.ResponseWriter, r *http.Request) any {
 	body := AddTagsRequest{}
@@ -66,8 +66,10 @@ func AddTags(w http.ResponseWriter, r *http.Request) any {
 	file := filesmanager.OpenFileWithTags(body.Path)
 
 	for _, tag := range body.Tags {
-		file.AddTag(tag)
+		if err := file.AddTag(tag); err != nil {
+			return ResponceError{Error: err.Error(), Status: http.StatusInternalServerError}
+		}
 	}
 
-	return Responce{Status: http.StatusAccepted, Comment: "OK"}
+	return Responce{Status: http.StatusOK, Comment: "OK"}
 }

@@ -52,6 +52,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/service.ResponceError"
                         }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
                     }
                 }
             }
