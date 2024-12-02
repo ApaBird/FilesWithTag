@@ -52,7 +52,7 @@ func (f *File) GetContent() ([]byte, error) {
 }
 
 func (f *File) loadFile() (file []byte, err error) {
-	file, err = os.ReadFile(f.dir + "/" + f.Name + "." + f.ftype)
+	file, err = os.ReadFile(f.dir + "/" + f.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (f *File) loadFile() (file []byte, err error) {
 }
 
 func (f *File) extractTags() {
-	file, err := os.Open(f.dir + "/" + f.Name + "." + f.ftype)
+	file, err := os.Open(f.dir + "/" + f.Name)
 	if err != nil {
 		return
 	}

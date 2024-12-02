@@ -30,8 +30,10 @@ func FilesInDir(dir string, count, offset int) ([]Content, error) {
 			continue
 		}
 
-		f, b, err := OpenFile(dir + "/" + file.Name())
+		pathToFile := strings.Replace(dir+"/"+file.Name(), "\\", "/", -1)
+		f, b, err := OpenFile(pathToFile)
 		if err != nil {
+			fmt.Println("[ERROR] ", err.Error())
 			continue
 		}
 

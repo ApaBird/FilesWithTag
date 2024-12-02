@@ -72,7 +72,7 @@ definitions:
           type: string
         type: array
     type: object
-host: localhost:8080
+host: localhost:8050
 info:
   contact: {}
   description: FilesWithTag API
@@ -88,7 +88,7 @@ paths:
       parameters:
       - description: path
         in: body
-        name: input
+        name: AddTagsRequest
         required: true
         schema:
           $ref: '#/definitions/service.AddTagsRequest'
@@ -185,7 +185,7 @@ paths:
       parameters:
       - description: path
         in: query
-        name: input
+        name: Path
         required: true
         type: string
       produces:

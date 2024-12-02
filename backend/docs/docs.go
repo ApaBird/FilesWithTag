@@ -32,7 +32,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "path",
-                        "name": "input",
+                        "name": "AddTagsRequest",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -178,7 +178,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "path",
-                        "name": "input",
+                        "name": "Path",
                         "in": "query",
                         "required": true
                     }
@@ -343,7 +343,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "2.0",
-	Host:             "localhost:8080",
+	Host:             "localhost:8050",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "FilesWithTag API",

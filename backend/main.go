@@ -35,6 +35,7 @@ func main() {
 		AllowedMethods: []string{"POST", "GET", "PUT", "DELETE"}, // Allowing only get, just an example
 	})
 
+	r.Use(InfoRequest)
 	SwaggerRouting(r)
 
 	r.HandleFunc("/Files", service.Wrapper(service.FilesHandler)).Methods("GET")
@@ -46,6 +47,13 @@ func main() {
 
 	fmt.Println("Сервер запущен")
 	http.ListenAndServe(":"+config.Port, c.Handler(r))
+}
+
+func InfoRequest(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.Method, r.URL)
+		next.ServeHTTP(w, r)
+	})
 }
 
 func SwaggerRouting(router *mux.Router) {

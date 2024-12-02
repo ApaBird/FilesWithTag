@@ -16,16 +16,16 @@ type AddTagsRequest struct {
 	Tags []string `json:"Tags"`
 }
 
-//	@Summary		Получение тегов
-//	@Tags			file
-//	@Description	Получение тегов по пути до файла
-//	@ID				getTags
-//	@Accept			json
-//	@Produce		json
-//	@Param			input	query		string			true	"path"
-//	@Success		200		{object}	ResponceFile	"tags"
-//	@Failure		400		{object}	ResponceError	"error"
-//	@Router			/GetMeta [get]
+// @Summary		Получение тегов
+// @Tags			file
+// @Description	Получение тегов по пути до файла
+// @ID				getTags
+// @Accept			json
+// @Produce		json
+// @Param			Path	query		string			true	"path"
+// @Success		200		{object}	ResponceFile	"tags"
+// @Failure		400		{object}	ResponceError	"error"
+// @Router			/GetMeta [get]
 func GetTags(w http.ResponseWriter, r *http.Request) any {
 	path := r.URL.Query().Get("Path")
 	if path == "" {
@@ -42,16 +42,16 @@ func GetTags(w http.ResponseWriter, r *http.Request) any {
 	return responce
 }
 
-//	@Summary		Добавление тегов
-//	@Tags			file
-//	@Description	Добавление тегов по пути до файла
-//	@ID				addTags
-//	@Accept			json
-//	@Produce		json
-//	@Param			input	body		AddTagsRequest	true	"path"
-//	@Success		200		{object}	Responce		"tags"
-//	@Failure		400		{object}	ResponceError	"error"
-//	@Router			/AddMeta [post]
+// @Summary		Добавление тегов
+// @Tags			file
+// @Description	Добавление тегов по пути до файла
+// @ID				addTags
+// @Accept			json
+// @Produce		json
+// @Param			AddTagsRequest	body		AddTagsRequest	true	"path"
+// @Success		200		{object}	Responce		"tags"
+// @Failure		400		{object}	ResponceError	"error"
+// @Router			/AddMeta [post]
 func AddTags(w http.ResponseWriter, r *http.Request) any {
 	body := AddTagsRequest{}
 

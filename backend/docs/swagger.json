@@ -6,7 +6,7 @@
         "contact": {},
         "version": "2.0"
     },
-    "host": "localhost:8080",
+    "host": "localhost:8050",
     "basePath": "/",
     "paths": {
         "/AddMeta": {
@@ -26,7 +26,7 @@
                 "parameters": [
                     {
                         "description": "path",
-                        "name": "input",
+                        "name": "AddTagsRequest",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -172,7 +172,7 @@
                     {
                         "type": "string",
                         "description": "path",
-                        "name": "input",
+                        "name": "Path",
                         "in": "query",
                         "required": true
                     }
