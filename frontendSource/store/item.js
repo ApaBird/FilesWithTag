@@ -3,5 +3,8 @@ export const itemStore = defineStore('item', () => {
   function setItem(data) {
     item.value = data
   }
-  return {item, setItem}
+  function closeItem() {
+    item.value = {Content: null, Name: 'Нет имени', Tags: []}
+  }
+  return {item, setItem, closeItem}
 })
