@@ -91,16 +91,14 @@ func (d *Dir) FindDir(path string) *Dir {
 func GetDirs(path string) []string {
 	var dirs []string
 
-	path = strings.Trim(path, "/")
-	path = strings.ReplaceAll(path, "//", "/")
-
+	path = strings.Replace(path, "/", "\\", -1)
 	files, err := os.ReadDir(path)
 	if err != nil {
 		return dirs
 	}
 	for _, f := range files {
 		if f.IsDir() {
-			dirs = append(dirs, strings.Replace(path+"/"+f.Name(), "\\", "/", -1))
+			dirs = append(dirs, strings.Replace(path+f.Name(), "\\", "/", -1))
 		}
 	}
 	return dirs
