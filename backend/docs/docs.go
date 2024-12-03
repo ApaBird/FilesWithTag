@@ -109,6 +109,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/Dirs": {
+            "get": {
+                "description": "Папки в папке",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dir"
+                ],
+                "summary": "Папки в папке",
+                "operationId": "getDirs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Путь до папки",
+                        "name": "Path",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "tags",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceDirs"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    }
+                }
+            }
+        },
         "/FileByte": {
             "get": {
                 "description": "Получение файла в формате байт строки",
@@ -451,6 +496,17 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "service.ResponceDirs": {
+            "type": "object",
+            "properties": {
+                "dirs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

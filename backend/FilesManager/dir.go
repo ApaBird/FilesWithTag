@@ -1,6 +1,8 @@
 package filesmanager
 
 import (
+	"fmt"
+	"os"
 	"strings"
 )
 
@@ -61,6 +63,7 @@ func (d *Dir) FindDir(path string) *Dir {
 	path = strings.Trim(path, "/")
 	path = strings.ReplaceAll(path, "//", "/")
 	split := strings.Split(path, "/")
+	fmt.Println("[DEBUG]", "Find Dir ", split)
 	if split[0] == d.Name {
 		// fmt.Println("YES")
 		if len(split) == 1 {
@@ -83,4 +86,22 @@ func (d *Dir) FindDir(path string) *Dir {
 		}
 	}
 	return nil
+}
+
+func GetDirs(path string) []string {
+	var dirs []string
+
+	path = strings.Trim(path, "/")
+	path = strings.ReplaceAll(path, "//", "/")
+
+	files, err := os.ReadDir(path)
+	if err != nil {
+		return dirs
+	}
+	for _, f := range files {
+		if f.IsDir() {
+			dirs = append(dirs, strings.Replace(path+"/"+f.Name(), "\\", "/", -1))
+		}
+	}
+	return dirs
 }

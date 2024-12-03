@@ -3,7 +3,6 @@ package main
 import (
 	//filesmanager "FilesWithTag/FilesManager"
 
-	filesmanager "FilesWithTag/FilesManager"
 	"FilesWithTag/service"
 	settingmodule "FilesWithTag/setting_module"
 	"fmt"
@@ -31,7 +30,7 @@ func main() {
 
 	settings := settingmodule.GetSetting()
 
-	filesmanager.AnalyzeStorage(settings.BasePath)
+	//filesmanager.AnalyzeStorage(settings.BasePath)
 
 	r := mux.NewRouter()
 	c := cors.New(cors.Options{
@@ -44,6 +43,8 @@ func main() {
 	SwaggerRouting(r)
 
 	r.HandleFunc("/OsTree", service.Wrapper(service.OsTreeHandler)).Methods("GET")
+
+	r.HandleFunc("/Dirs", service.Wrapper(service.GetDirs)).Methods("GET")
 
 	r.HandleFunc("/Files", service.Wrapper(service.FilesHandler)).Methods("GET")
 	r.HandleFunc("/FileByte", service.Wrapper(service.GetFileByte)).Methods("GET")
@@ -71,9 +72,6 @@ func SwaggerRouting(router *mux.Router) {
 	prefix := "/docs"
 	router.PathPrefix(prefix).Handler(httpSwagger.Handler(
 		httpSwagger.URL("doc.json"),
-		//httpSwagger.DeepLinking(true),
-		//httpSwagger.DocExpansion("none"),
-		//httpSwagger.DomID("swagger-ui"),
 	)).Methods(http.MethodGet)
 
 }

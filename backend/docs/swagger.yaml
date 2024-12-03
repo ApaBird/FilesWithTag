@@ -58,6 +58,13 @@ definitions:
       status:
         type: integer
     type: object
+  service.ResponceDirs:
+    properties:
+      dirs:
+        items:
+          type: string
+        type: array
+    type: object
   service.ResponceError:
     properties:
       error:
@@ -152,6 +159,36 @@ paths:
       summary: Удаление тегов
       tags:
       - file
+  /Dirs:
+    get:
+      consumes:
+      - application/json
+      description: Папки в папке
+      operationId: getDirs
+      parameters:
+      - description: Путь до папки
+        in: query
+        name: Path
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: tags
+          schema:
+            $ref: '#/definitions/service.ResponceDirs'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+      summary: Папки в папке
+      tags:
+      - dir
   /FileByte:
     get:
       consumes:
