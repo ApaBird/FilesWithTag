@@ -5,7 +5,6 @@ import (
 	"os"
 	"path"
 	"strings"
-	"time"
 )
 
 type convector struct {
@@ -64,48 +63,4 @@ func FilesInDir(dir string, count, offset int, ftype string) ([]Content, error) 
 		}
 	}
 	return list, nil
-}
-
-func AnalyzeStorage(startDir string) {
-	t := time.Now()
-	pull := make([]string, 0)
-
-	startDir = strings.Replace(startDir, "\\", "/", -1)
-	startDir = strings.Trim(startDir, "/")
-	pull = append(pull, startDir)
-	OsTree = NewDir(startDir, startDir)
-
-	fmt.Println("[DEBUG]", startDir)
-
-	for len(pull) > 0 {
-		dir := pull[0]
-		pull = pull[1:]
-		if strings.Contains(dir, "Windows") || strings.Contains(dir, "Program Files") || strings.Contains(dir, "ProgramData") {
-			continue
-		}
-		files, err := os.ReadDir(dir)
-		if err != nil {
-			fmt.Println("[ERROR]", err.Error())
-			continue
-		}
-
-		for _, file := range files {
-			if file.IsDir() {
-				pull = append(pull, strings.Trim(dir, "/")+"/"+file.Name())
-				fmt.Println("[DEBUG]", strings.Trim(dir, "/")+"/"+file.Name())
-				d := OsTree.FindDir(dir)
-				// fmt.Println("=>", strings.Count(dir, "/"))
-				// if strings.Count(dir, "/") >= 3 {
-				// 	time.Sleep(time.Second * 10)
-				// }
-				if d == nil {
-					fmt.Println("[ERROR] dir not found")
-					continue
-				}
-				d.AddDirByName(file.Name())
-			}
-		}
-	}
-
-	fmt.Println("Времения потрачено:", time.Since(t))
 }

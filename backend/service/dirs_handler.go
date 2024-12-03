@@ -6,7 +6,7 @@ import (
 )
 
 type ResponceDirs struct {
-	Dirs []string `json:"dirs"`
+	Dirs []filesmanager.Dir `json:"dirs"`
 }
 
 // @Summary		Папки в папке
