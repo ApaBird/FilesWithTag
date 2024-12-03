@@ -126,14 +126,20 @@ func (f *File) extractTags() {
 	f.Tags, f.haveTags = extractTags(content)
 }
 
-// TODO при пустом "Tags:" парсит тег "", по сути не существующий тег
 func extractTags(content []byte) (tags *Set, haveTags bool) {
 	tagsIndex := bytes.Index(content, []byte("Tags:"))
 	tags = NewSet()
 	if tagsIndex != -1 {
-		tagsStr := string(content[tagsIndex:])
-		tags.AppendSlice(strings.Split(tagsStr[strings.Index(tagsStr, ":")+1:], ","))
 		haveTags = true
+		tagsStr := string(content[tagsIndex:])
+		tagsStr = tagsStr[strings.Index(tagsStr, ":")+1:]
+		if strings.Contains(tagsStr, ",") {
+			for _, tag := range strings.Split(tagsStr, ",") {
+				if tag != "" {
+					tags.Append(tag)
+				}
+			}
+		}
 	} else {
 		tags = NewSet()
 		haveTags = false
@@ -165,15 +171,10 @@ func (f *File) AddTag(tag string) error {
 		}
 	}
 
-	if f.Tags.Size() == 0 {
-		if _, err := file.WriteString(tag); err != nil {
-			return err
-		}
-	} else {
-		if _, err := file.WriteString("," + tag); err != nil {
-			return err
-		}
+	if _, err := file.WriteString(tag + ","); err != nil {
+		return err
 	}
+
 	f.Tags.Append(tag)
 	return nil
 }

@@ -1,7 +1,5 @@
 package filesmanager
 
-import "strings"
-
 type Set struct {
 	data map[string]struct{}
 }
@@ -47,5 +45,5 @@ func (s *Set) ToString() string {
 		result += value + ","
 	}
 
-	return strings.TrimSuffix(result, ",")
+	return result
 }
