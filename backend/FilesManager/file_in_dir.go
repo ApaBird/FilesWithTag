@@ -66,12 +66,13 @@ func FilesInDir(dir string, count, offset int, ftype string) ([]Content, error) 
 	return list, nil
 }
 
-func AnalyzeStorage() {
+func AnalyzeStorage(startDir string) {
 	t := time.Now()
 	pull := make([]string, 0)
-	pull = append(pull, "C:/")
+	pull = append(pull, startDir)
 
-	OsTree = NewDir("C:", "C:/")
+	firstDir := strings.Split(startDir, "/")[0]
+	OsTree = NewDir(firstDir, startDir)
 
 	for len(pull) > 0 {
 		dir := pull[0]

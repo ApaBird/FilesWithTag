@@ -74,6 +74,15 @@ definitions:
           type: string
         type: array
     type: object
+  settingmodule.Setting:
+    properties:
+      BasePath:
+        type: string
+      LastDir:
+        type: string
+      Port:
+        type: string
+    type: object
 host: localhost:8050
 info:
   contact: {}
@@ -264,4 +273,54 @@ paths:
       summary: Дерево папок
       tags:
       - OsTree
+  /Settings:
+    get:
+      consumes:
+      - application/json
+      description: Получение настроек запуска
+      operationId: getSettings
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: settings
+          schema:
+            $ref: '#/definitions/settingmodule.Setting'
+      summary: Получение настроек
+      tags:
+      - setting
+    put:
+      consumes:
+      - application/json
+      description: Получение настроек запуска
+      operationId: getSettings
+      parameters:
+      - description: name setting
+        in: query
+        name: NameSetting
+        required: true
+        type: string
+      - description: name setting
+        in: query
+        name: ValueSetting
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: settings
+          schema:
+            $ref: '#/definitions/service.Responce'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+      summary: Получение настроек
+      tags:
+      - setting
 swagger: "2.0"

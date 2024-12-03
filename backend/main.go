@@ -5,6 +5,7 @@ import (
 
 	filesmanager "FilesWithTag/FilesManager"
 	"FilesWithTag/service"
+	settingmodule "FilesWithTag/setting_module"
 	"fmt"
 	"net/http"
 
@@ -24,9 +25,13 @@ import (
 //	@BasePath		/
 
 func main() {
-	config := Readconfig("config.json")
+	if err := settingmodule.Init(); err != nil {
+		panic(err)
+	}
 
-	filesmanager.AnalyzeStorage()
+	settings := settingmodule.GetSetting()
+
+	filesmanager.AnalyzeStorage(settings.BasePath)
 
 	r := mux.NewRouter()
 	c := cors.New(cors.Options{
@@ -38,16 +43,21 @@ func main() {
 	r.Use(InfoRequest)
 	SwaggerRouting(r)
 
+	r.HandleFunc("/OsTree", service.Wrapper(service.OsTreeHandler)).Methods("GET")
+
 	r.HandleFunc("/Files", service.Wrapper(service.FilesHandler)).Methods("GET")
 	r.HandleFunc("/FileByte", service.Wrapper(service.GetFileByte)).Methods("GET")
-	r.HandleFunc("/OsTree", service.Wrapper(service.OsTreeHandler)).Methods("GET")
 	r.HandleFunc("/GetMeta", service.Wrapper(service.GetTags)).Methods("GET")
 	r.HandleFunc("/AddMeta", service.Wrapper(service.AddTags)).Methods("POST")
 	r.HandleFunc("/DelMeta", service.Wrapper(service.DelTags)).Methods("POST")
+
+	r.HandleFunc("/Settings", service.Wrapper(service.GetSettings)).Methods("GET")
+	r.HandleFunc("/Settings", service.Wrapper(service.ChangeSettings)).Methods("PUT")
+
 	r.PathPrefix("/").HandlerFunc(service.ViewHandler)
 
 	fmt.Println("Сервер запущен")
-	http.ListenAndServe(":"+config.Port, c.Handler(r))
+	http.ListenAndServe(":"+settings.Port, c.Handler(r))
 }
 
 func InfoRequest(next http.Handler) http.Handler {

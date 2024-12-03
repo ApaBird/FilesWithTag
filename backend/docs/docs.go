@@ -287,6 +287,80 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/Settings": {
+            "get": {
+                "description": "Получение настроек запуска",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setting"
+                ],
+                "summary": "Получение настроек",
+                "operationId": "getSettings",
+                "responses": {
+                    "200": {
+                        "description": "settings",
+                        "schema": {
+                            "$ref": "#/definitions/settingmodule.Setting"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Получение настроек запуска",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setting"
+                ],
+                "summary": "Получение настроек",
+                "operationId": "getSettings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name setting",
+                        "name": "NameSetting",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name setting",
+                        "name": "ValueSetting",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "settings",
+                        "schema": {
+                            "$ref": "#/definitions/service.Responce"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -402,6 +476,20 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "settingmodule.Setting": {
+            "type": "object",
+            "properties": {
+                "BasePath": {
+                    "type": "string"
+                },
+                "LastDir": {
+                    "type": "string"
+                },
+                "Port": {
+                    "type": "string"
                 }
             }
         }
