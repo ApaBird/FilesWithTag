@@ -65,3 +65,12 @@ func (p *Path) Join(dir string) {
 func (p *Path) Back() {
 	p.Dirs = p.Dirs[:len(p.Dirs)-1]
 }
+
+func (p *Path) Ext() string {
+	fileName := p.Dirs[len(p.Dirs)-1]
+	dotIndex := strings.LastIndex(fileName, ".")
+	if dotIndex == -1 {
+		return ""
+	}
+	return fileName[dotIndex:]
+}

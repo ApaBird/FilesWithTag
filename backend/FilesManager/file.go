@@ -73,6 +73,7 @@ func (f *File) loadFile() (file []byte, err error) {
 	return file, nil
 }
 
+// TODO слишком долго грузит если никогда небыло тегов
 func (f *File) extractTags() {
 	fmt.Println("[DEBUG]", f.dir+"/"+f.Name)
 	file, err := os.Open(f.dir + "/" + f.Name)
@@ -120,7 +121,6 @@ func (f *File) extractTags() {
 		if len(content) >= int(stat.Size()) {
 			break
 		}
-		//time.Sleep(time.Second * 30)
 	}
 
 	f.Tags, f.haveTags = extractTags(content)
@@ -216,4 +216,8 @@ func (f *File) RemoveTag(tag string) error {
 
 	return nil
 
+}
+
+func (f *File) HaveTage(tag string) bool {
+	return f.Tags.Contains(tag)
 }

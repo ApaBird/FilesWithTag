@@ -43,15 +43,15 @@ func GetTags(w http.ResponseWriter, r *http.Request) any {
 }
 
 // @Summary		Добавление тегов
-// @Tags			file
+// @Tags		file
 // @Description	Добавление тегов по пути до файла
-// @ID				addTags
-// @Accept			json
+// @ID			addTags
+// @Accept		json
 // @Produce		json
-// @Param			AddTagsRequest	body		AddTagsRequest	true	"path"
+// @Param		AddTagsRequest	body		AddTagsRequest	true	"path"
 // @Success		200		{object}	Responce		"tags"
 // @Failure		400,500		{object}	ResponceError	"error"
-// @Router			/AddMeta [post]
+// @Router		/AddMeta [post]
 func AddTags(w http.ResponseWriter, r *http.Request) any {
 	body := AddTagsRequest{}
 
