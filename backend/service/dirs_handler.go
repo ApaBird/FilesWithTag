@@ -26,7 +26,10 @@ func GetDirs(w http.ResponseWriter, r *http.Request) any {
 		return ResponceError{Error: ErrParametrs.Error(), Status: http.StatusBadRequest}
 	}
 
-	dirs := filesmanager.GetDirs(path)
+	dirs, err := filesmanager.GetDirs(path)
+	if err != nil {
+		return ResponceError{Error: err.Error(), Status: http.StatusInternalServerError}
+	}
 
 	responce := ResponceDirs{Dirs: dirs}
 

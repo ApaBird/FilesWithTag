@@ -1,8 +1,8 @@
 package filesmanager
 
 import (
+	"FilesWithTag/pkg/path"
 	"os"
-	"strings"
 )
 
 type Dir struct {
@@ -10,19 +10,25 @@ type Dir struct {
 	Path string
 }
 
-func GetDirs(path string) []Dir {
+func GetDirs(dir string) ([]Dir, error) {
 	var dirs []Dir
 
-	path = strings.Replace(path, "/", "\\", -1)
-	files, err := os.ReadDir(path)
+	p, err := path.ParsePath(dir)
 	if err != nil {
-		return dirs
+		return nil, err
 	}
+
+	files, err := os.ReadDir(p.String())
+	if err != nil {
+		return nil, err
+	}
+
 	for _, f := range files {
 		if f.IsDir() {
-			p := strings.Trim(path, "\\")
-			dirs = append(dirs, Dir{Name: f.Name(), Path: strings.Replace(p+"/"+f.Name(), "\\", "/", -1)})
+			p.Join(f.Name())
+			dirs = append(dirs, Dir{Name: f.Name(), Path: p.StringLinux()})
+			p.Back()
 		}
 	}
-	return dirs
+	return dirs, nil
 }
