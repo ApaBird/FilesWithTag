@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 )
 
 type File struct {
@@ -73,56 +74,16 @@ func (f *File) loadFile() (file []byte, err error) {
 	return file, nil
 }
 
-// TODO слишком долго грузит если никогда небыло тегов
 func (f *File) extractTags() {
-	fmt.Println("[DEBUG]", f.dir+"/"+f.Name)
-	file, err := os.Open(f.dir + "/" + f.Name)
-	if err != nil {
-		return
-	}
-	defer file.Close()
+	fmt.Println("[DEBUG] Extrcting tags")
+	t := time.Now()
 
-	stat, err := file.Stat()
+	content, err := os.ReadFile(f.dir + "/" + f.Name)
 	if err != nil {
 		return
 	}
 
-	step := 100
-	if stat.Size() < int64(step) {
-		step = int(stat.Size())
-	}
-
-	content := make([]byte, 0)
-
-	for i := 1; ; i++ {
-		offset := stat.Size() - int64(step)*int64(i)
-		if offset < 0 {
-			offset = 0
-		}
-
-		sizeBuff := step
-		if int64(len(content)+sizeBuff) > stat.Size() {
-			sizeBuff = int(stat.Size()) - len(content)
-		}
-
-		buf := make([]byte, sizeBuff)
-		_, err := file.ReadAt(buf, offset)
-		if err != nil {
-			fmt.Println(err.Error())
-			break
-		}
-		fmt.Println(stat.Size(), sizeBuff, offset, len(content), step)
-
-		content = append(content, buf[:]...)
-		if bytes.Contains(content, []byte("Tags:")) {
-			break
-		}
-
-		if len(content) >= int(stat.Size()) {
-			break
-		}
-	}
-
+	fmt.Println("[DEBUG]", time.Since(t).Seconds(), "Size:", float64(len(content))/1024/1024, "MB")
 	f.Tags, f.haveTags = extractTags(content)
 }
 
