@@ -1,7 +1,7 @@
 package service
 
 import (
-	filesmanager "FilesWithTag/FilesManager"
+	filesmanager "FilesWithTag/file_manager"
 	"encoding/json"
 	"net/http"
 )
@@ -15,6 +15,16 @@ type SearchResponce struct {
 	Files []filesmanager.Content
 }
 
+// @Summary		Поиск по тегам в папке
+// @Tags		file
+// @Description	Поиск по тегам в папке
+// @ID			Search
+// @Accept		json
+// @Produce		json
+// @Param		SearchData	body	SearchRequest	true	"Путь до папки"
+// @Success		200		{object}	SearchResponce			"список файлов"
+// @Failure		400,500	{object}	ResponceError			"error"
+// @Router		/Search [post]
 func SearchHandler(w http.ResponseWriter, r *http.Request) any {
 	request := SearchRequest{}
 

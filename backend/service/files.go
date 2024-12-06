@@ -1,13 +1,14 @@
 package service
 
 import (
-	filesmanager "FilesWithTag/FilesManager"
+	filesmanager "FilesWithTag/file_manager"
 	"net/http"
 	"strconv"
 )
 
-type FilesInfo struct {
-	Files []filesmanager.Content
+type FilesResponce struct {
+	TagsInDir []string
+	Files     []filesmanager.Content
 }
 
 type FileByte struct {
@@ -16,18 +17,18 @@ type FileByte struct {
 }
 
 // @Summary		Получение тегов
-// @Tags			file
+// @Tags		file
 // @Description	Получение тегов по пути до файла
-// @ID				GetFilesInDir
-// @Accept			json
+// @ID			GetFilesInDir
+// @Accept		json
 // @Produce		json
-// @Param			Path	query		string			true	"Путь до папки"
-// @Param			Count	query		string			true	"Количество"
-// @Param			Offset	query		string			true	"Отступ"
-// @Param			Ftype	query		string			false	"Тип файлов" Enums(Image, Music, Video, Text)
-// @Success		200		{object}	FilesInfo	"список файлов"
-// @Failure		400,500		{object}	ResponceError	"error"
-// @Router			/Files [get]
+// @Param		Path	query		string			true	"Путь до папки"
+// @Param		Count	query		string			true	"Количество"
+// @Param		Offset	query		string			true	"Отступ"
+// @Param		Ftype	query		string			false	"Тип файлов" Enums(Image, Music, Video, Text)
+// @Success		200		{object}	FilesResponce			"список файлов"
+// @Failure		400,500	{object}	ResponceError			"error"
+// @Router		/Files [get]
 func FilesHandler(w http.ResponseWriter, r *http.Request) any {
 	path := r.URL.Query().Get("Path")
 	count := r.URL.Query().Get("Count")
@@ -51,12 +52,12 @@ func FilesHandler(w http.ResponseWriter, r *http.Request) any {
 		return ResponceError{Error: ErrNotCorrectTypeParametr.Error(), Status: http.StatusBadRequest}
 	}
 
-	files, err := filesmanager.FilesInDir(path, countInt, offsetInt, ftype)
+	files, tags, err := filesmanager.FilesInDir(path, countInt, offsetInt, ftype)
 	if err != nil {
 		return ResponceError{Error: err.Error(), Status: http.StatusInternalServerError}
 	}
 
-	return FilesInfo{Files: files}
+	return FilesResponce{Files: files, TagsInDir: tags}
 }
 
 // @Summary		Получение файла

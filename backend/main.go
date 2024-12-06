@@ -52,7 +52,7 @@ func main() {
 	r.HandleFunc("/AddMeta", service.Wrapper(service.AddTags)).Methods("POST")
 	r.HandleFunc("/DelMeta", service.Wrapper(service.DelTags)).Methods("POST")
 
-	r.HandleFunc("/Search", service.Wrapper(service.SearchHandler)).Methods("GET")
+	r.HandleFunc("/Search", service.Wrapper(service.SearchHandler)).Methods("POST")
 
 	r.HandleFunc("/Settings", service.Wrapper(service.GetSettings)).Methods("GET")
 	r.HandleFunc("/Settings", service.Wrapper(service.ChangeSettings)).Methods("PUT")
