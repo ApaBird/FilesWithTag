@@ -26,7 +26,7 @@ func GetSettings(w http.ResponseWriter, r *http.Request) any {
 // @Accept		json
 // @Produce		json
 // @Param		NameSetting		query	string	true	"name setting"
-// @Param		ValueSetting	query	string	true	"name setting"
+// @Param		ValueSetting	query	string	true	"value setting"
 // @Success		200			{object}	Responce	"settings"
 // @Failure		400,500		{object}	ResponceError	"error"
 // @Router		/Settings [put]

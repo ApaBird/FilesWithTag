@@ -2,6 +2,7 @@ package settingmodule
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 )
 
@@ -20,14 +21,16 @@ func NewSetting() *Setting {
 }
 
 func (s *Setting) Save() error {
-	f, err := os.Open("setting/setting.json")
+	f, err := os.OpenFile("setting/setting.json", os.O_WRONLY|os.O_TRUNC, 0600)
 	if err != nil {
+		fmt.Println("[ERROR] ", err.Error())
 		return err
 	}
 
 	enc := json.NewEncoder(f)
 	err = enc.Encode(s)
 	if err != nil {
+		fmt.Println("[ERROR] ", err.Error())
 		return err
 	}
 
