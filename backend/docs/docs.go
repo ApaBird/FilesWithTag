@@ -335,6 +335,53 @@ const docTemplate = `{
         },
         "/Search": {
             "post": {
+                "description": "Поиск по тегам начиная с базовой папки указаной в настройке",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "Поиск по тегам",
+                "operationId": "Search",
+                "parameters": [
+                    {
+                        "description": "Путь до папки",
+                        "name": "SearchData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.SearchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "список файлов",
+                        "schema": {
+                            "$ref": "#/definitions/service.SearchResponce"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    }
+                }
+            }
+        },
+        "/SearchInDir": {
+            "post": {
                 "description": "Поиск по тегам в папке",
                 "consumes": [
                     "application/json"
@@ -346,7 +393,7 @@ const docTemplate = `{
                     "file"
                 ],
                 "summary": "Поиск по тегам в папке",
-                "operationId": "Search",
+                "operationId": "SearchInDir",
                 "parameters": [
                     {
                         "description": "Путь до папки",
@@ -354,7 +401,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/service.SearchRequest"
+                            "$ref": "#/definitions/service.SearchInDirRequest"
                         }
                     }
                 ],
@@ -426,7 +473,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "name setting",
+                        "description": "value setting",
                         "name": "ValueSetting",
                         "in": "query",
                         "required": true
@@ -582,12 +629,23 @@ const docTemplate = `{
                 }
             }
         },
-        "service.SearchRequest": {
+        "service.SearchInDirRequest": {
             "type": "object",
             "properties": {
                 "dir": {
                     "type": "string"
                 },
+                "tag": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "service.SearchRequest": {
+            "type": "object",
+            "properties": {
                 "tag": {
                     "type": "array",
                     "items": {

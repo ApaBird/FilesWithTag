@@ -64,63 +64,44 @@ func FilesInDir(dir string, count, offset int, ftype string) ([]Content, []strin
 	return list, tagsDir.ToSlice(), nil
 }
 
-func asyncFilesInDir(pathFile string, list *[]Content, tagsInDir *set.Set, wg *sync.WaitGroup, m *sync.Mutex) {
-	defer wg.Done()
-	f, b, err := OpenFile(pathFile)
-	if err != nil {
-		fmt.Println("[ERROR] ", err.Error())
-		return
-	}
-	res := Content{
-		Name:    f.Name,
-		Ftype:   f.ftype,
-		Tags:    f.GetTags().ToSlice(),
-		Content: b,
-	}
+// NOTE: кажется логика дырявая, но пока не ясно где и как улучшить
+func SearchFileWithTags(dir string, tagsList []string) ([]Content, error) {
+	files := make([]string, 0)
 
-	m.Lock()
-	tagsInDir.AppendSlice(f.GetTags().ToSlice())
-	*list = append(*list, res)
-	m.Unlock()
-}
-
-func SearchFileWithTags(dir string, tags []string) ([]Content, error) {
-	files, err := os.ReadDir(dir)
+	p, err := path.ParsePath(dir)
 	if err != nil {
 		return nil, err
 	}
 
-	var res []Content
-	pathFile, err := path.ParsePath(dir)
-	if err != nil {
-		return nil, err
-	}
+	dir = p.StringLinux()
 
-	for _, file := range files {
-		pathFile.Join(file.Name())
-		f, b, err := OpenFile(pathFile.StringLinux())
-		pathFile.Back()
-		if err != nil {
-			return nil, err
-		}
-
-		relevant := false
-		for _, t := range tags {
-			relevant = f.Tags.Contains(t)
-			if relevant {
-				break
+	for _, v := range tagsList {
+		for _, file := range tags.Get(v) {
+			if strings.Contains(file, dir) {
+				fmt.Println("[DEBUG]", strings.TrimPrefix(file, dir), file, dir)
+				fmt.Println("[DEBUG]", len(strings.Split(strings.TrimPrefix(file, dir), "/")))
+				if len(strings.Split(strings.TrimPrefix(strings.TrimPrefix(file, dir), "/"), "/")) == 1 {
+					fmt.Println("[DEBUG] finded")
+					files = append(files, file)
+				}
 			}
 		}
-
-		if relevant {
-			res = append(res, Content{
-				Name:    f.Name,
-				Content: b,
-				Ftype:   f.ftype,
-				Tags:    f.Tags.ToSlice(),
-			})
-		}
 	}
+
+	res := asyncLoadFilesList(files)
+
+	return res, nil
+}
+
+func SearchAllFileWithTags(tagsList []string) ([]Content, error) {
+	fmt.Println("[DEBUG] SearchAllFileWithTags", tagsList)
+	files := make([]string, 0)
+
+	for _, v := range tagsList {
+		files = append(files, tags.Get(v)...)
+	}
+
+	res := asyncLoadFilesList(files)
 
 	return res, nil
 }

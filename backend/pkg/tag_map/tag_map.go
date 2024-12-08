@@ -1,6 +1,10 @@
 package tagmap
 
-import "FilesWithTag/pkg/set"
+import (
+	"FilesWithTag/pkg/path"
+	"FilesWithTag/pkg/set"
+	"fmt"
+)
 
 type TagMap struct {
 	Map     map[string]*set.Set
@@ -15,6 +19,14 @@ func NewTagMap() *TagMap {
 }
 
 func (t *TagMap) Add(key string, value string) {
+	p, err := path.ParsePath(value)
+	if err != nil {
+		fmt.Println("[ERROR] ", err.Error(), value)
+		return
+	}
+
+	value = p.StringLinux()
+
 	if _, ok := t.Map[key]; !ok {
 		t.Map[key] = set.NewSet()
 	}
@@ -27,15 +39,30 @@ func (t *TagMap) Add(key string, value string) {
 }
 
 func (t *TagMap) Remove(key string, value string) {
+	p, err := path.ParsePath(value)
+	if err != nil {
+		fmt.Println("[ERROR] ", err.Error(), value)
+		return
+	}
+
+	value = p.StringLinux()
+
 	t.Map[key].Remove(value)
 	t.Inverse[value].Remove(key)
 }
 
 func (t *TagMap) Get(key string) []string {
+	if _, ok := t.Map[key]; !ok {
+		fmt.Println("[INFO] Not found key", key)
+		return make([]string, 0)
+	}
 	return t.Map[key].ToSlice()
 }
 
 func (t *TagMap) GetInverse(key string) []string {
+	if _, ok := t.Inverse[key]; !ok {
+		return make([]string, 0)
+	}
 	return t.Inverse[key].ToSlice()
 }
 

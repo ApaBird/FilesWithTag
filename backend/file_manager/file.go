@@ -54,10 +54,10 @@ func OpenFileWithTags(filePath string) *File {
 		dir:   path.Dir(filePath),
 	}
 
-	fmt.Println("[DEBUG]", f.dir)
-	fmt.Println("[DEBUG]", f.Name)
-
-	f.extractTags()
+	if err := f.extractTags(); err != nil {
+		fmt.Println("[ERROR] ", err.Error(), filePath)
+		f.Tags = set.NewSet()
+	}
 
 	return &f
 }
@@ -75,17 +75,18 @@ func (f *File) loadFile() (file []byte, err error) {
 	return file, nil
 }
 
-func (f *File) extractTags() {
-	fmt.Println("[DEBUG] Extrcting tags")
+func (f *File) extractTags() error {
 	t := time.Now()
 
 	content, err := os.ReadFile(f.dir + "/" + f.Name)
 	if err != nil {
-		return
+		return err
 	}
-
-	fmt.Println("[DEBUG]", time.Since(t).Seconds(), "Size:", float64(len(content))/1024/1024, "MB")
+	if time.Since(t).Seconds() > 0.1 {
+		fmt.Println("[DEBUG] Long loading time", time.Since(t).Seconds(), "Size:", float64(len(content))/1024/1024, "MB")
+	}
 	f.Tags, f.haveTags = extractTags(content)
+	return nil
 }
 
 func extractTags(content []byte) (tags *set.Set, haveTags bool) {
@@ -138,6 +139,7 @@ func (f *File) AddTag(tag string) error {
 	}
 
 	f.Tags.Append(tag)
+	tags.Add(tag, f.dir+"/"+f.Name)
 	return nil
 }
 
@@ -175,6 +177,8 @@ func (f *File) RemoveTag(tag string) error {
 			return err
 		}
 	}
+
+	tags.Remove(tag, f.dir+"/"+f.Name)
 
 	return nil
 

@@ -81,10 +81,17 @@ definitions:
           type: string
         type: array
     type: object
-  service.SearchRequest:
+  service.SearchInDirRequest:
     properties:
       dir:
         type: string
+      tag:
+        items:
+          type: string
+        type: array
+    type: object
+  service.SearchRequest:
+    properties:
       tag:
         items:
           type: string
@@ -330,7 +337,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Поиск по тегам в папке
+      description: Поиск по тегам начиная с базовой папки указаной в настройке
       operationId: Search
       parameters:
       - description: Путь до папки
@@ -339,6 +346,37 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/service.SearchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: список файлов
+          schema:
+            $ref: '#/definitions/service.SearchResponce'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/service.ResponceError'
+      summary: Поиск по тегам
+      tags:
+      - file
+  /SearchInDir:
+    post:
+      consumes:
+      - application/json
+      description: Поиск по тегам в папке
+      operationId: SearchInDir
+      parameters:
+      - description: Путь до папки
+        in: body
+        name: SearchData
+        required: true
+        schema:
+          $ref: '#/definitions/service.SearchInDirRequest'
       produces:
       - application/json
       responses:
@@ -384,7 +422,7 @@ paths:
         name: NameSetting
         required: true
         type: string
-      - description: name setting
+      - description: value setting
         in: query
         name: ValueSetting
         required: true
