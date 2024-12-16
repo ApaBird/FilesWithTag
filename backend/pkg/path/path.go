@@ -2,6 +2,7 @@ package path
 
 import (
 	"errors"
+	"fmt"
 	"runtime"
 	"strings"
 )
@@ -34,7 +35,6 @@ func ParsePath(path string) (*Path, error) {
 
 	path = strings.Trim(path, sep)
 	path = strings.ReplaceAll(path, sep+sep, sep)
-
 	return NewPath(strings.Split(path, sep)), nil
 }
 
@@ -51,6 +51,10 @@ func (p *Path) String() string {
 }
 
 func (p *Path) StringLinux() string {
+	if len(p.Dirs) == 1 {
+		return p.Dirs[0] + "/"
+	}
+	fmt.Println("[DEBUG] ->", strings.Join(p.Dirs, "/"))
 	return strings.Join(p.Dirs, "/")
 }
 

@@ -1,7 +1,7 @@
 package service
 
 import (
-	filesmanager "FilesWithTag/FilesManager"
+	filesmanager "FilesWithTag/file_manager"
 	"net/http"
 )
 

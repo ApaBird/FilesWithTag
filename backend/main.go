@@ -3,6 +3,7 @@ package main
 import (
 	//filesmanager "FilesWithTag/FilesManager"
 
+	filesmanager "FilesWithTag/file_manager"
 	"FilesWithTag/service"
 	settingmodule "FilesWithTag/setting_module"
 	"fmt"
@@ -30,7 +31,7 @@ func main() {
 
 	settings := settingmodule.GetSetting()
 
-	//filesmanager.AnalyzeStorage(settings.BasePath)
+	go filesmanager.AnalyzeStorage(settings.BasePath)
 
 	r := mux.NewRouter()
 	c := cors.New(cors.Options{
@@ -52,7 +53,8 @@ func main() {
 	r.HandleFunc("/AddMeta", service.Wrapper(service.AddTags)).Methods("POST")
 	r.HandleFunc("/DelMeta", service.Wrapper(service.DelTags)).Methods("POST")
 
-	r.HandleFunc("/Search", service.Wrapper(service.SearchHandler)).Methods("GET")
+	r.HandleFunc("/Search", service.Wrapper(service.SearchHandler)).Methods("POST")
+	r.HandleFunc("/SearchInDir", service.Wrapper(service.SearchInDirHandler)).Methods("POST")
 
 	r.HandleFunc("/Settings", service.Wrapper(service.GetSettings)).Methods("GET")
 	r.HandleFunc("/Settings", service.Wrapper(service.ChangeSettings)).Methods("PUT")

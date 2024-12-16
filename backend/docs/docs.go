@@ -252,7 +252,7 @@ const docTemplate = `{
                     "200": {
                         "description": "список файлов",
                         "schema": {
-                            "$ref": "#/definitions/service.FilesInfo"
+                            "$ref": "#/definitions/service.FilesResponce"
                         }
                     },
                     "400": {
@@ -333,6 +333,100 @@ const docTemplate = `{
                 }
             }
         },
+        "/Search": {
+            "post": {
+                "description": "Поиск по тегам начиная с базовой папки указаной в настройке",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "Поиск по тегам",
+                "operationId": "Search",
+                "parameters": [
+                    {
+                        "description": "Путь до папки",
+                        "name": "SearchData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.SearchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "список файлов",
+                        "schema": {
+                            "$ref": "#/definitions/service.SearchResponce"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    }
+                }
+            }
+        },
+        "/SearchInDir": {
+            "post": {
+                "description": "Поиск по тегам в папке",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "Поиск по тегам в папке",
+                "operationId": "SearchInDir",
+                "parameters": [
+                    {
+                        "description": "Путь до папки",
+                        "name": "SearchData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.SearchInDirRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "список файлов",
+                        "schema": {
+                            "$ref": "#/definitions/service.SearchResponce"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/service.ResponceError"
+                        }
+                    }
+                }
+            }
+        },
         "/Settings": {
             "get": {
                 "description": "Получение настроек запуска",
@@ -379,7 +473,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "name setting",
+                        "description": "value setting",
                         "name": "ValueSetting",
                         "in": "query",
                         "required": true
@@ -435,16 +529,10 @@ const docTemplate = `{
         "filesmanager.Dir": {
             "type": "object",
             "properties": {
-                "content": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/filesmanager.Dir"
-                    }
-                },
-                "dir": {
+                "name": {
                     "type": "string"
                 },
-                "name": {
+                "path": {
                     "type": "string"
                 }
             }
@@ -477,13 +565,19 @@ const docTemplate = `{
                 }
             }
         },
-        "service.FilesInfo": {
+        "service.FilesResponce": {
             "type": "object",
             "properties": {
                 "files": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/filesmanager.Content"
+                    }
+                },
+                "tagsInDir": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
                 }
             }
@@ -505,7 +599,7 @@ const docTemplate = `{
                 "dirs": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/filesmanager.Dir"
                     }
                 }
             }
@@ -531,6 +625,42 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "string"
+                    }
+                }
+            }
+        },
+        "service.SearchInDirRequest": {
+            "type": "object",
+            "properties": {
+                "dir": {
+                    "type": "string"
+                },
+                "tag": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "service.SearchRequest": {
+            "type": "object",
+            "properties": {
+                "tag": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "service.SearchResponce": {
+            "type": "object",
+            "properties": {
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/filesmanager.Content"
                     }
                 }
             }
