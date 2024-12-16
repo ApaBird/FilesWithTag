@@ -11,6 +11,13 @@ import (
 
 var tags = tagmap.NewTagMap()
 
+var NotSupportDir = []string{
+	"Program Files", "Program Files (x86)", "Windows", "ProgramData", "AppData",
+}
+
+// TODO : Занимает всю память для прогрузки файлов
+// TODO : Добавить папки исключения
+
 func AnalyzeStorage(dir string) {
 	wg := &sync.WaitGroup{}
 	start := time.Now()
